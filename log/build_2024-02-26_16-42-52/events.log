@@ -1,0 +1,131 @@
+[0.000000] (-) TimerEvent: {}
+[0.003417] (SPOT) JobQueued: {'identifier': 'SPOT', 'dependencies': OrderedDict()}
+[0.003502] (SPOT) JobStarted: {'identifier': 'SPOT'}
+[0.063547] (SPOT) JobProgress: {'identifier': 'SPOT', 'progress': 'cmake'}
+[0.064454] (SPOT) Command: {'cmd': ['/usr/bin/cmake', '/home/namsonpham/spot_ws/src/SPOT', '-DAMENT_CMAKE_SYMLINK_INSTALL=1', '-DCMAKE_INSTALL_PREFIX=/home/namsonpham/spot_ws/install/SPOT'], 'cwd': '/home/namsonpham/spot_ws/build/SPOT', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'namsonpham'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('MOTD_SHOWN', 'update-motd'), ('HOME', '/home/namsonpham'), ('OLDPWD', '/home/namsonpham/spot_ws/src'), ('ROS_PYTHON_VERSION', '3'), ('WSL_DISTRO_NAME', 'Ubuntu-22.04'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'namsonpham'), ('NAME', 'LAPTOP-IRCUPH9D'), ('WSL_INTEROP', '/run/WSL/17_interop'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/WindowsApps/CanonicalGroupLimited.Ubuntu22.04LTS_2204.3.63.0_x64__79rhkp1fndgsc:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/Program Files (x86)/Common Files/Intel/Shared Libraries/redist/intel64/compiler:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/:/mnt/c/Program Files/IVI Foundation/VISA/Win64/Bin/:/mnt/c/Program Files (x86)/National Instruments/Shared/LabVIEW CLI:/mnt/c/Program Files (x86)/IVI Foundation/IVI/Bin/:/mnt/c/Program Files/IVI Foundation/IVI/Bin/:/mnt/c/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin:/mnt/c/Program Files/nodejs/:/mnt/c/Users/namso/AppData/Local/Programs/Python/Python311/Scripts/:/mnt/c/Users/namso/AppData/Local/Programs/Python/Python311/:/mnt/c/Users/namso/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/namso/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/PostgreSQL/15/bin:/mnt/c/Program Files/Java/jdk-19/bin:/mnt/c/Users/namso/AppData/Roaming/npm:/snap/bin'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('SHELL', '/bin/bash'), ('CXX', 'clang++'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/namsonpham/spot_ws/build/SPOT'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('CC', 'clang'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', ''), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[0.100035] (-) TimerEvent: {}
+[0.200475] (-) TimerEvent: {}
+[0.300923] (-) TimerEvent: {}
+[0.392750] (SPOT) StdoutLine: {'line': b'-- The C compiler identification is Clang 14.0.0\n'}
+[0.401051] (-) TimerEvent: {}
+[0.501450] (-) TimerEvent: {}
+[0.601845] (-) TimerEvent: {}
+[0.702272] (-) TimerEvent: {}
+[0.802666] (-) TimerEvent: {}
+[0.903204] (-) TimerEvent: {}
+[1.003642] (-) TimerEvent: {}
+[1.104050] (-) TimerEvent: {}
+[1.204477] (-) TimerEvent: {}
+[1.304893] (-) TimerEvent: {}
+[1.405289] (-) TimerEvent: {}
+[1.505686] (-) TimerEvent: {}
+[1.606194] (-) TimerEvent: {}
+[1.706643] (-) TimerEvent: {}
+[1.807120] (-) TimerEvent: {}
+[1.907518] (-) TimerEvent: {}
+[2.008122] (-) TimerEvent: {}
+[2.108688] (-) TimerEvent: {}
+[2.209224] (-) TimerEvent: {}
+[2.309983] (-) TimerEvent: {}
+[2.410589] (-) TimerEvent: {}
+[2.511115] (-) TimerEvent: {}
+[2.611588] (-) TimerEvent: {}
+[2.712009] (-) TimerEvent: {}
+[2.812554] (-) TimerEvent: {}
+[2.913044] (-) TimerEvent: {}
+[3.013504] (-) TimerEvent: {}
+[3.114002] (-) TimerEvent: {}
+[3.214652] (-) TimerEvent: {}
+[3.315177] (-) TimerEvent: {}
+[3.415607] (-) TimerEvent: {}
+[3.516083] (-) TimerEvent: {}
+[3.616524] (-) TimerEvent: {}
+[3.716908] (-) TimerEvent: {}
+[3.817493] (-) TimerEvent: {}
+[3.918014] (-) TimerEvent: {}
+[4.018542] (-) TimerEvent: {}
+[4.119085] (-) TimerEvent: {}
+[4.219538] (-) TimerEvent: {}
+[4.319966] (-) TimerEvent: {}
+[4.420438] (-) TimerEvent: {}
+[4.425642] (SPOT) StdoutLine: {'line': b'-- The CXX compiler identification is Clang 14.0.0\n'}
+[4.520576] (-) TimerEvent: {}
+[4.620943] (-) TimerEvent: {}
+[4.721326] (-) TimerEvent: {}
+[4.821849] (-) TimerEvent: {}
+[4.922316] (-) TimerEvent: {}
+[5.022736] (-) TimerEvent: {}
+[5.123106] (-) TimerEvent: {}
+[5.223469] (-) TimerEvent: {}
+[5.324002] (-) TimerEvent: {}
+[5.406219] (SPOT) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[5.424178] (-) TimerEvent: {}
+[5.524668] (-) TimerEvent: {}
+[5.625216] (-) TimerEvent: {}
+[5.725643] (-) TimerEvent: {}
+[5.826183] (-) TimerEvent: {}
+[5.855662] (SPOT) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[5.866937] (SPOT) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/clang - skipped\n'}
+[5.867460] (SPOT) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[5.868370] (SPOT) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[5.873882] (SPOT) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[5.926353] (-) TimerEvent: {}
+[6.026800] (-) TimerEvent: {}
+[6.127170] (-) TimerEvent: {}
+[6.227567] (-) TimerEvent: {}
+[6.253177] (SPOT) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[6.262315] (SPOT) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/clang++ - skipped\n'}
+[6.262749] (SPOT) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[6.263436] (SPOT) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[6.266061] (SPOT) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.8 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[6.327743] (-) TimerEvent: {}
+[6.428146] (-) TimerEvent: {}
+[6.460311] (SPOT) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[6.528342] (-) TimerEvent: {}
+[6.536202] (SPOT) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[6.563358] (SPOT) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.12.10 (/opt/ros/humble/share/ament_lint_auto/cmake)\n'}
+[6.628572] (-) TimerEvent: {}
+[6.666553] (SPOT) StderrLine: {'line': b'WARNING: Package name "SPOT" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.\n'}
+[6.699129] (SPOT) StdoutLine: {'line': b"-- Added test 'copyright' to check source files copyright and LICENSE\n"}
+[6.703696] (SPOT) StdoutLine: {'line': b"-- Added test 'flake8' to check Python code syntax and style conventions\n"}
+[6.704678] (SPOT) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[6.705492] (SPOT) StdoutLine: {'line': b"-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257\n"}
+[6.707888] (SPOT) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[6.709545] (SPOT) StdoutLine: {'line': b'-- Configuring done\n'}
+[6.712624] (SPOT) StdoutLine: {'line': b'-- Generating done\n'}
+[6.713554] (SPOT) StdoutLine: {'line': b'-- Build files have been written to: /home/namsonpham/spot_ws/build/SPOT\n'}
+[6.717828] (SPOT) CommandEnded: {'returncode': 0}
+[6.718708] (SPOT) JobProgress: {'identifier': 'SPOT', 'progress': 'build'}
+[6.720722] (SPOT) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/namsonpham/spot_ws/build/SPOT', '--', '-j12', '-l12'], 'cwd': '/home/namsonpham/spot_ws/build/SPOT', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'namsonpham'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('MOTD_SHOWN', 'update-motd'), ('HOME', '/home/namsonpham'), ('OLDPWD', '/home/namsonpham/spot_ws/src'), ('ROS_PYTHON_VERSION', '3'), ('WSL_DISTRO_NAME', 'Ubuntu-22.04'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'namsonpham'), ('NAME', 'LAPTOP-IRCUPH9D'), ('WSL_INTEROP', '/run/WSL/17_interop'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/WindowsApps/CanonicalGroupLimited.Ubuntu22.04LTS_2204.3.63.0_x64__79rhkp1fndgsc:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/Program Files (x86)/Common Files/Intel/Shared Libraries/redist/intel64/compiler:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/:/mnt/c/Program Files/IVI Foundation/VISA/Win64/Bin/:/mnt/c/Program Files (x86)/National Instruments/Shared/LabVIEW CLI:/mnt/c/Program Files (x86)/IVI Foundation/IVI/Bin/:/mnt/c/Program Files/IVI Foundation/IVI/Bin/:/mnt/c/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin:/mnt/c/Program Files/nodejs/:/mnt/c/Users/namso/AppData/Local/Programs/Python/Python311/Scripts/:/mnt/c/Users/namso/AppData/Local/Programs/Python/Python311/:/mnt/c/Users/namso/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/namso/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/PostgreSQL/15/bin:/mnt/c/Program Files/Java/jdk-19/bin:/mnt/c/Users/namso/AppData/Roaming/npm:/snap/bin'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('SHELL', '/bin/bash'), ('CXX', 'clang++'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/namsonpham/spot_ws/build/SPOT'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('CC', 'clang'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', ''), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[6.728675] (-) TimerEvent: {}
+[6.756108] (SPOT) CommandEnded: {'returncode': 0}
+[6.779134] (SPOT) JobProgress: {'identifier': 'SPOT', 'progress': 'install'}
+[6.790032] (SPOT) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/namsonpham/spot_ws/build/SPOT'], 'cwd': '/home/namsonpham/spot_ws/build/SPOT', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'namsonpham'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('MOTD_SHOWN', 'update-motd'), ('HOME', '/home/namsonpham'), ('OLDPWD', '/home/namsonpham/spot_ws/src'), ('ROS_PYTHON_VERSION', '3'), ('WSL_DISTRO_NAME', 'Ubuntu-22.04'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'namsonpham'), ('NAME', 'LAPTOP-IRCUPH9D'), ('WSL_INTEROP', '/run/WSL/17_interop'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/WindowsApps/CanonicalGroupLimited.Ubuntu22.04LTS_2204.3.63.0_x64__79rhkp1fndgsc:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/Program Files (x86)/Common Files/Intel/Shared Libraries/redist/intel64/compiler:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA NvDLISR:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/MATLAB/R2021b/bin:/mnt/c/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin/:/mnt/c/Program Files/IVI Foundation/VISA/Win64/Bin/:/mnt/c/Program Files (x86)/National Instruments/Shared/LabVIEW CLI:/mnt/c/Program Files (x86)/IVI Foundation/IVI/Bin/:/mnt/c/Program Files/IVI Foundation/IVI/Bin/:/mnt/c/Program Files (x86)/IVI Foundation/VISA/WinNT/Bin:/mnt/c/Program Files/nodejs/:/mnt/c/Users/namso/AppData/Local/Programs/Python/Python311/Scripts/:/mnt/c/Users/namso/AppData/Local/Programs/Python/Python311/:/mnt/c/Users/namso/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/namso/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/PostgreSQL/15/bin:/mnt/c/Program Files/Java/jdk-19/bin:/mnt/c/Users/namso/AppData/Roaming/npm:/snap/bin'), ('LANG', 'en_US.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('SHELL', '/bin/bash'), ('CXX', 'clang++'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('PWD', '/home/namsonpham/spot_ws/build/SPOT'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('CC', 'clang'), ('COLCON', '1'), ('HOSTTYPE', 'x86_64'), ('WSLENV', ''), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[6.798591] (SPOT) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[6.799440] (SPOT) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[6.800377] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/config/empty.yaml\n'}
+[6.811154] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/description/robot.urdf.xacro\n'}
+[6.821853] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/launch/rsp.launch.py\n'}
+[6.828804] (-) TimerEvent: {}
+[6.832412] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/worlds/empty.world\n'}
+[6.843214] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/ament_index/resource_index/package_run_dependencies/SPOT\n'}
+[6.853956] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/ament_index/resource_index/parent_prefix_path/SPOT\n'}
+[6.864610] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/environment/ament_prefix_path.sh\n'}
+[6.874626] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/environment/ament_prefix_path.dsv\n'}
+[6.884731] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/environment/path.sh\n'}
+[6.895658] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/environment/path.dsv\n'}
+[6.906196] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/local_setup.bash\n'}
+[6.916656] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/local_setup.sh\n'}
+[6.927235] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/local_setup.zsh\n'}
+[6.928962] (-) TimerEvent: {}
+[6.937735] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/local_setup.dsv\n'}
+[6.949551] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/package.dsv\n'}
+[6.960303] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/ament_index/resource_index/packages/SPOT\n'}
+[6.971450] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/cmake/SPOTConfig.cmake\n'}
+[6.979846] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/cmake/SPOTConfig-version.cmake\n'}
+[6.987503] (SPOT) StdoutLine: {'line': b'-- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/package.xml\n'}
+[6.997380] (SPOT) CommandEnded: {'returncode': 0}
+[7.030534] (-) TimerEvent: {}
+[7.131336] (-) TimerEvent: {}
+[7.224579] (SPOT) JobEnded: {'identifier': 'SPOT', 'rc': 0}
+[7.225142] (-) EventReactorShutdown: {}

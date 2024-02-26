@@ -1,0 +1,52 @@
+[0.065s] Invoking command in '/home/namsonpham/spot_ws/build/SPOT': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/namsonpham/spot_ws/src/SPOT -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/namsonpham/spot_ws/install/SPOT
+[0.389s] -- The C compiler identification is Clang 14.0.0
+[4.422s] -- The CXX compiler identification is Clang 14.0.0
+[5.403s] -- Detecting C compiler ABI info
+[5.852s] -- Detecting C compiler ABI info - done
+[5.864s] -- Check for working C compiler: /usr/bin/clang - skipped
+[5.864s] -- Detecting C compile features
+[5.865s] -- Detecting C compile features - done
+[5.870s] -- Detecting CXX compiler ABI info
+[6.250s] -- Detecting CXX compiler ABI info - done
+[6.259s] -- Check for working CXX compiler: /usr/bin/clang++ - skipped
+[6.259s] -- Detecting CXX compile features
+[6.260s] -- Detecting CXX compile features - done
+[6.263s] -- Found ament_cmake: 1.3.8 (/opt/ros/humble/share/ament_cmake/cmake)
+[6.457s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[6.533s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[6.560s] -- Found ament_lint_auto: 0.12.10 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[6.663s] WARNING: Package name "SPOT" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+[6.696s] -- Added test 'copyright' to check source files copyright and LICENSE
+[6.700s] -- Added test 'flake8' to check Python code syntax and style conventions
+[6.701s] -- Added test 'lint_cmake' to check CMake code style
+[6.702s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[6.704s] -- Added test 'xmllint' to check XML markup files
+[6.706s] -- Configuring done
+[6.709s] -- Generating done
+[6.710s] -- Build files have been written to: /home/namsonpham/spot_ws/build/SPOT
+[6.715s] Invoked command in '/home/namsonpham/spot_ws/build/SPOT' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/namsonpham/spot_ws/src/SPOT -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/namsonpham/spot_ws/install/SPOT
+[6.717s] Invoking command in '/home/namsonpham/spot_ws/build/SPOT': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/namsonpham/spot_ws/build/SPOT -- -j12 -l12
+[6.753s] Invoked command in '/home/namsonpham/spot_ws/build/SPOT' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/namsonpham/spot_ws/build/SPOT -- -j12 -l12
+[6.787s] Invoking command in '/home/namsonpham/spot_ws/build/SPOT': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/namsonpham/spot_ws/build/SPOT
+[6.795s] -- Install configuration: ""
+[6.796s] -- Execute custom install script
+[6.797s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/config/empty.yaml
+[6.808s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/description/robot.urdf.xacro
+[6.819s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/launch/rsp.launch.py
+[6.829s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/worlds/empty.world
+[6.840s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/ament_index/resource_index/package_run_dependencies/SPOT
+[6.851s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/ament_index/resource_index/parent_prefix_path/SPOT
+[6.861s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/environment/ament_prefix_path.sh
+[6.871s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/environment/ament_prefix_path.dsv
+[6.881s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/environment/path.sh
+[6.892s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/environment/path.dsv
+[6.903s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/local_setup.bash
+[6.913s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/local_setup.sh
+[6.924s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/local_setup.zsh
+[6.934s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/local_setup.dsv
+[6.946s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/package.dsv
+[6.957s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/ament_index/resource_index/packages/SPOT
+[6.968s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/cmake/SPOTConfig.cmake
+[6.976s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/cmake/SPOTConfig-version.cmake
+[6.984s] -- Symlinking: /home/namsonpham/spot_ws/install/SPOT/share/SPOT/package.xml
+[6.994s] Invoked command in '/home/namsonpham/spot_ws/build/SPOT' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/namsonpham/spot_ws/build/SPOT
