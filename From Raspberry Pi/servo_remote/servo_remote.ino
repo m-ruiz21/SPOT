@@ -2,7 +2,7 @@
 #include <Adafruit_PWMServoDriver.h>
 
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
-#define STARTANGLE 350 // PWM value which arduino sets servo to at startup
+#define START_ANGLE 300 // PWM value which arduino sets servo to at startup
 
 bool isInteger(String str);
 bool parseIntegerFromSerial(int* output);
@@ -13,6 +13,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 void setup() {
   Serial.begin(9600);
+  Serial.setTimeout(100);
 
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
@@ -24,14 +25,17 @@ void setup() {
 
 int speed = 5; // Speed variable, might be helpful to add a serial command to allow us to change this
 
-int angle = STARTANGLE;
-int target = STARTANGLE;
+int angle = START_ANGLE;
+int target = -1; // Initial value
 
 void loop() {
   // Read an integer (with newline) over serial and set the servo's target PWM to it
-  // Values should be between 100 and 600
+  // Values should be between 100 and 500
    
   parseIntegerFromSerial(&target);
+
+  // Don't do anything until we've received a command
+  if(target == -1) { return; }
 
   // Slowly approach the target PWM instead of setting the PWM directly to it
   angle += ((target - angle) / abs(target - angle)) * speed;

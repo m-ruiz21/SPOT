@@ -1,5 +1,6 @@
 import serial
 import subprocess
+from time import sleep
 
 def acquire_serial():
 	# look for /dev/ttyACM* devices
@@ -12,7 +13,10 @@ def acquire_serial():
 		raise Exception("Cannot acquire serial connection!")
 
 
-	return serial.Serial(tty, 9600)
+	ser = serial.Serial(tty, 9600)
+	print(f'Acquiring serial {tty}...')
+	sleep(3) # serial takes like 3 seconds to actually connect
+	return ser
 
 ser = acquire_serial()
 
