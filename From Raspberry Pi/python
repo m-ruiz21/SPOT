@@ -1,0 +1,2 @@
+#!/bin/bash
+/home/pi/Desktop/pi_rplidar/CircuitPython\ 9.x/venv/bin/python $@
