@@ -2,7 +2,6 @@
 #include <Adafruit_PWMServoDriver.h>
 
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
-#define START_ANGLE 300 // PWM value which arduino sets servo to at startup
 
 bool isInteger(String str);
 bool parseIntegerFromSerial(int* output);
@@ -23,19 +22,19 @@ void setup() {
 }
 
 
-int speed = 5; // Speed variable, might be helpful to add a serial command to allow us to change this
+int speed = 10; // Speed variable, might be helpful to add a serial command to allow us to change this
 
-int angle = START_ANGLE;
-int target = -1; // Initial value
+int angle = -1; // Initial value
+int target = -1;
 
 void loop() {
   // Read an integer (with newline) over serial and set the servo's target PWM to it
   // Values should be between 100 and 500
-   
   parseIntegerFromSerial(&target);
 
   // Don't do anything until we've received a command
   if(target == -1) { return; }
+  if(angle == -1) { angle = target; } // initialize angle
 
   // Slowly approach the target PWM instead of setting the PWM directly to it
   angle += ((target - angle) / abs(target - angle)) * speed;
