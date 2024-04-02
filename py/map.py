@@ -1,49 +1,110 @@
 import numpy as np
 from decimal import Decimal
 import pyrealsense2 as rs 
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import time
 
-def generate_room_map(frame)-> list[list[int]]:
+def update(i):
+    plt.clf()
+    print(f"updating... {i}")
+    start_time = time.time()
+    global pipeline 
+    array = get_pointcloud(pipeline)
+    occupancy_array = create_occupancy_array(array, pov_fill=True, resolution=0.1)
+    end_time = time.time()
+    print(f"Time taken to update occupancy array: {end_time - start_time} seconds") 
+    plt.imshow(occupancy_array, cmap='binary', origin='lower')
+    plt.xlabel('X-coordinate (cells)')
+    plt.ylabel('Y-coordinate (cells)')
+    plt.title('Occupancy Array')
+    plt.grid(True)
+
+
+def visualize_2d(point_cloud):
     """
-    Transposes depth camera output to create binary 2D map of room 
+    Creates a 2D projection of a point cloud.
 
     Args:
-        camera_array: 640x480 list of depth camera outputs
+        point_cloud (list of tuples): A list of tuples representing points in 3D space.
+            Each tuple should contain (x, y, z) coordinates.
+
+    Returns:
+        None (displays the 2D projection plot)
     """
+    # Extract x, y, and z coordinates from the point cloud
+    x_coords, y_coords, z_coords = zip(*point_cloud)
 
-    GRID_DEPTH = 20.998     # array value represents object in 20.998mm x 20.977mm square
-    MAX_DISTANCE = 8000  
-
-    room_map = np.zeros((381, 640))
-
-    for y in range(480):
-        for x in range(640):
-            dist = frame.get_distance(x,y) 
-            if dist < MAX_DISTANCE:
-                room_row = int(dist / GRID_DEPTH)
-                room_map[380 - room_row][x] = 1 if room_row != 0 else -1
-
-    return room_map
+    # Create a scatter plot of the point cloud in the x-y plane
+    plt.figure(figsize=(8, 6))
+    plt.scatter(x_coords, y_coords, c=z_coords, s=5)
+    plt.colorbar(label='height-coordinate')
+    plt.xlabel('X-coordinate')
+    plt.ylabel('Y-coordinate')
+    plt.title('2D Projection of Point Cloud')
+    plt.grid(True)
+    plt.show()
 
 
-def print_room_map(room_map):
-    print(50*"-")
-    for y, row in enumerate(room_map, start=150):
-        if y % 3 != 0:
-            continue
-        for x, val in enumerate(row):
-            if x % 3 != 0:
-                continue
-            
-            if val == 0:
-                print(" ", end="")
-            elif val == 1:
-                print("#", end="")        
-            else:
-                print("X", end="") 
-    
-    print(50*"-")
+def fill_pov(occupancy_array, camera_cell_x, pov_angle_degrees):
+    for y, x in np.ndindex(occupancy_array.shape):
+        dx = abs(x - camera_cell_x)
+        angle_from_camera = np.degrees(np.arctan2(y, dx))
+        if angle_from_camera < pov_angle_degrees / 2:
+            occupancy_array[y, x] = True 
 
 
+def create_occupancy_array(point_cloud, resolution=0.1, pov_angle_degrees=80, pov_fill=False):
+    """
+    Creates an occupancy array from a point cloud.
+
+    Args:
+        point_cloud (list of tuples): A list of tuples representing points in 3D space.
+            Each tuple should contain (x, y, z) coordinates.
+        resolution (float): The grid resolution (cell size) for the occupancy array.
+
+    Returns:
+        np.ndarray: A 2D occupancy array where True indicates an object is present.
+    """
+    # z coordinates is the depth and y is the height, so we ignore y and rename z to our 'y' 
+    x_coords, y_coords, _  = zip(*point_cloud)
+
+    # point cloud is relative to camera (has neg values)
+    # so we need to define the dimensions of the occupancy array 
+    # such that the min values are 0
+    min_x, max_x = min(x_coords), max(x_coords)
+    min_y, max_y = min(y_coords), max(y_coords)
+
+    num_x_cells = int(np.ceil((max_x - min_x) / resolution))
+    num_y_cells = int(np.ceil((max_y - min_y) / resolution))
+
+    camera_cell_x = int((0 - min_x) / resolution)
+
+    occupancy_array = np.zeros((num_y_cells, num_x_cells), dtype=bool)
+
+    if pov_fill:
+        fill_pov(occupancy_array, camera_cell_x, pov_angle_degrees)
+
+    for x, y, _ in point_cloud:
+        cell_x = int((x - min_x) / resolution)
+        cell_y = int((y - min_y) / resolution) 
+        
+        occupancy_array[cell_y, cell_x] = True
+
+    return occupancy_array
+
+
+def get_pointcloud(pipeline):
+    frames = pipeline.wait_for_frames()
+    depth = frames.get_depth_frame()
+    if not depth: return None
+    pc = rs.pointcloud()
+    points = pc.calculate(depth.as_depth_frame())
+    return np.asanyarray(points.get_vertices())
+
+
+global pipeline
 pipeline = rs.pipeline()
 config = rs.config()
 config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
@@ -59,15 +120,12 @@ try:
     # Start streaming
     pipeline.start(config)
 
-    while True:
-        # This call waits until a new coherent set of frames is available on a device
-        # Calls to get_frame_data(...) and get_frame_timestamp(...) on a device will return stable values until wait_for_frames(...) is called
-        frames = pipeline.wait_for_frames()
-        depth = frames.get_depth_frame()
-        if not depth: continue
+    array = get_pointcloud(pipeline)
 
-        room_map = generate_room_map(depth.as_depth_frame())
-        print_room_map(room_map)
+    visualize_2d(array)
+    # fig = plt.figure(figsize=(8, 6))
+    # ani = animation.FuncAnimation(fig, update, interval=100, save_count=10)  # update every 100ms
+    # plt.show()
 
     exit(0)
 
