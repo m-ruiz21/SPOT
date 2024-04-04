@@ -1,9 +1,0 @@
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/uninstall.dir
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/SPOT_uninstall.dir
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/test.dir
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/edit_cache.dir
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/rebuild_cache.dir
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/list_install_components.dir
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/install.dir
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/install/local.dir
-/home/namsonpham/spot_ws/build/SPOT/CMakeFiles/install/strip.dir
