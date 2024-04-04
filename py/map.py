@@ -37,7 +37,7 @@ def update(i):
     for y in range(220, 300):
         for x in range(640):
             depth_index = int(depth_scaled[y, x]) - 1 
-            if depth_index < 200:
+            if depth_index < 500:
                 depth_map[depth_index, x] = 1
 
 
