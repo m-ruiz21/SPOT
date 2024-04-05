@@ -3,3 +3,4 @@ numpy
 opencv-python
 rplidar
 maturin
+matplotlib
