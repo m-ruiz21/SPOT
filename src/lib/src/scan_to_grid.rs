@@ -3,14 +3,22 @@ const EXTEND_AREA: f32 = 1.0; // Define EXTEND_AREA as a constant at the top of 
 
 #[pyclass]
 pub struct OccupancyGrid {
+    #[pyo3(get)]
     pub occupancy_map: Vec<Vec<f32>>,
+    #[pyo3(get)]
     pub min_x: f32,
+    #[pyo3(get)]
     pub max_x: f32,
+    #[pyo3(get)]
     pub min_y: f32,
+    #[pyo3(get)]
     pub max_y: f32,
+    #[pyo3(get)]
     pub x_width: usize,
+    #[pyo3(get)]
     pub y_width: usize,
 }
+
 
 /// Converts LIDAR scan to occupancy grid.
 /// # Arguments
@@ -22,6 +30,7 @@ pub struct OccupancyGrid {
 /// 
 /// * `OccupancyGrid` - Contains grid and its metadata
 #[pyfunction]
+#[pyo3(text_signature = "(angles: list<float>, distances: list<float>, resolution: float, /)")]
 pub fn scan_to_grid(angles: Vec<f32>, distances: Vec<f32>, resolution: f32) -> OccupancyGrid {
     let occupied_x: Vec<f32> = distances.iter()
         .zip(angles.iter())
@@ -82,10 +91,29 @@ pub fn scan_to_grid(angles: Vec<f32>, distances: Vec<f32>, resolution: f32) -> O
 /// 
 /// * A tuple containing the minimum x, minimum y, maximum x, maximum y, x width, and y width of the grid map.
 fn calc_grid_map_config(occupied_x: Vec<f32>, occupied_y: Vec<f32>, resolution: f32) -> (f32, f32, f32, f32, usize, usize) {
-    let min_x = (occupied_x.iter().fold(f32::INFINITY, |a, &b| f32::min(a, b)) - EXTEND_AREA / 2.0).round();
-    let min_y = (occupied_y.iter().fold(f32::INFINITY, |a, &b| f32::min(a, b)) - EXTEND_AREA / 2.0).round();
-    let max_x = (occupied_x.iter().fold(f32::NEG_INFINITY, |a, &b| f32::max(a, b)) + EXTEND_AREA / 2.0).round();
-    let max_y = (occupied_y.iter().fold(f32::NEG_INFINITY, |a, &b| f32::max(a, b)) + EXTEND_AREA / 2.0).round();
+    let min_x = (occupied_x
+            .iter()
+            .min_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .unwrap() - EXTEND_AREA / 2.0
+        ).round();
+    let min_y = (occupied_y
+            .iter()
+            .min_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .unwrap() - EXTEND_AREA / 2.0
+        ).round();
+
+    let max_x = (occupied_x
+            .iter()
+            .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .unwrap() + EXTEND_AREA / 2.0
+        ).round();
+
+    let max_y = (occupied_y
+            .iter()
+            .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .unwrap() + EXTEND_AREA / 2.0
+        ).round();
+
     let x_width = ((max_x - min_x) / resolution).round() as usize;
     let y_width = ((max_y - min_y) / resolution).round() as usize;
     
@@ -102,7 +130,7 @@ fn calc_grid_map_config(occupied_x: Vec<f32>, occupied_y: Vec<f32>, resolution: 
 /// 
 /// # Returns
 /// 
-/// * A vector of tuples containing the x and y coordinates of the points on the line.
+/// * A vector of tuples containing the x and y coordinates of the points from start to finish.
 fn bresenham(start: (usize, usize), end: (usize, usize)) -> Vec<(usize, usize)> {
     let (mut x1, mut y1) = start;
     let (mut x2, mut y2) = end;

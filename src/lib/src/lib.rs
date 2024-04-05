@@ -1,16 +1,12 @@
 use pyo3::prelude::*;
 mod scan_to_grid;
-
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
-}
+mod point_cloud_to_scan;
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn lib(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+fn spot_rs(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(scan_to_grid::scan_to_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(point_cloud_to_scan::point_cloud_to_scan, m)?)?;
+    m.add_class::<scan_to_grid::OccupancyGrid>()?; 
     Ok(())
 }
