@@ -6,7 +6,10 @@ param(
     [Alias("e")]
     [switch]$EndEnv,
     [Alias("i")]
-    [switch]$InstallDeps
+    [switch]$InstallDeps,
+    [Alias("b")]
+    [switch]$Build,
+    [switch]$Setup
 )
 
 if ($CreateEnv) {
@@ -23,4 +26,26 @@ if ($EndEnv) {
 
 if ($InstallDeps) {
     py -m pip install -r .\requirements.txt
+}
+
+if ($Build) {
+    Set-Location src/lib
+    maturin build 
+    
+    $whl = Get-ChildItem -Path target/wheels -Filter *.whl | ForEach-Object { $_.Name }
+
+    py -m pip install $whl
+
+    Set-Location ../../
+}
+
+if ($Setup) {
+    "Setting up virtual environment..." 
+    ./SPOT -c
+    "Starting Virtual Environment..."
+    ./SPOT -s
+    "Installing dependencies..."
+    ./SPOT -i
+    "Building the project..."
+    ./SPOT -b
 }
