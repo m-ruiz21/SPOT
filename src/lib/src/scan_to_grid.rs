@@ -26,12 +26,14 @@ pub struct GaussianGrid {
 /// 
 /// * `angles` - A vector of angles in radians.
 /// * `distances` - A vector of distances in meters. 
+/// * `resolution` - Desired resolution of the grid map.
+/// * `danger_rad` - Maximum distance to consider as danger. 
 /// 
 /// # Returns
 /// 
 /// * `GuassianGrid` - Contains grid and its metadata
 #[pyfunction]
-#[pyo3(text_signature = "(angles: list<float>, distances: list<float>, resolution: float, std: float, /)")]
+#[pyo3(text_signature = "(angles: list<float>, distances: list<float>, resolution: float, danger_rad: float, /)")]
 pub fn scan_to_grid(angles: Vec<f64>, distances: Vec<f64>, resolution: f64, danger_rad: f64) -> GaussianGrid {
     let occupied_x: Vec<f64> = distances.iter()
         .zip(angles.iter())

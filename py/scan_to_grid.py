@@ -27,16 +27,17 @@ def main():
     xy_resolution = .1  # grid represend .1 units (LIDAR unit) in the real world  
     ang, dist = file_read("lidar01.csv")
 
-    dist = dist * 10
+    dist = dist * 80 
 
     start = time.time()
     grid = \
-        scan_to_grid(ang, dist, xy_resolution, 2)
+        scan_to_grid(ang, dist, xy_resolution, 20)
     end = time.time()
     print("time:", end - start) 
     plt.imshow(grid.grid_map, cmap="hot_r", origin="lower")
     plt.colorbar()
     plt.show()
+
 
 if __name__ == '__main__':
     main()    
