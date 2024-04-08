@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from spot_rs import scan_to_grid
+from spot_rs import scan_to_grid 
+from spot_rs import traverse_grid
 
 # moves = [
 #     (0, 10),
@@ -48,7 +49,7 @@ class Node:
         return self.score < other.score 
 
 
-def traverse_grid(grid: list[list[float]], start: tuple[int, int], end_y: int, moves) -> list[Node]:
+def traverse_grid_py(grid: list[list[float]], start: tuple[int, int], end_y: int, moves) -> list[Node]:
     
     init_x, init_y = start
     init_node = Node(init_x, init_y, grid[init_y][init_x], [], 0, 0, calc_score(grid[init_y][init_x], 0, []))
@@ -157,13 +158,14 @@ def main():
     
     mid = time.time()
     
+    print("scan to grid time:", mid - start)
+    
     path = traverse_grid(grid.grid_map, (40, 0), len(grid.grid_map) - 1, moves)
     
     end = time.time()
     
-    print("total time:", end - start) 
-    print("scan to grid time:", mid - start)
     print("traverse grid time:", end - mid)
+    print("total time:", end - start) 
 
     plt.imshow(grid.grid_map, cmap="hot_r", origin="lower")
     plt.colorbar()

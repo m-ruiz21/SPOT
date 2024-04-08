@@ -34,7 +34,7 @@ if ($Build) {
     
     $whl = Get-ChildItem -Path target/wheels -Filter *.whl | ForEach-Object { $_.Name }
 
-    py -m pip install target/wheels/$whl
+    py -m pip install target/wheels/$whl.name
 
     Set-Location ../../
 }
