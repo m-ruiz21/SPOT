@@ -27,12 +27,22 @@ def servo_send(pwm):
 			ser.open()
 
 		# pwm = int(input("Enter PWM Value: "))
-		bytes = (str(pwm)+"\n").encode()
+		bytes = ("S"+str(pwm)+"\n").encode()
 		ser.write(bytes)
 		print(f"Sent PWM value: {pwm}")
 
 	except Exception as e:
 		print(f"Error: {e}")
 
-#	finally:
-#		ser.close()
+def beep_send():
+	try:
+		# Open the serial port
+		if not ser.isOpen():
+			ser.open()
+
+		bytes = ("B\n").encode()
+		ser.write(bytes)
+		print(f"Sent Beep")
+
+	except Exception as e:
+		print(f"Error: {e}")
