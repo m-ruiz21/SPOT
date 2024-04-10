@@ -71,8 +71,8 @@ pub fn traverse_grid(grid: Vec<Vec<f64>>, start: (i32, i32), end_y: usize, moves
             if !valid_move(new_x, new_y, &grid) {
                 continue;
             } 
-        
-            let turns = node.turns + (move_idx != node.move_idx) as usize;
+            
+            let turns = node.turns + (move_idx != node.move_idx && move_idx != 0) as usize;
 
             let mut new_path = node.parents.clone();
             new_path.push((node.x, node.y));
