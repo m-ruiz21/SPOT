@@ -3,23 +3,7 @@ import matplotlib.pyplot as plt
 import time
 from spot_rs import scan_to_grid 
 from spot_rs import traverse_grid
-
-# moves = [
-#     (0, 10),
-#     (2, 10),
-#     (-2, 10),
-#     (3, 9),
-#     (-3, 9),
-#     (5, 9),
-#     (-5, 9),
-#     (6, 8),
-#     (-6, 8),
-#     (8, 6),
-#     (-8, 6),
-#     (9, 5),
-#     (-9, 5)
-# ]
-
+import argparse
 import heapq
 
 def valid_move(x, y, grid):
@@ -36,7 +20,7 @@ def calc_score(min_dist, turns, path):
 
 
 class Node:
-    def __init__(self, x: int, y: int, min_dist: float, parents: list['Node'], move, turns, score):
+    def __init__(self, x: int, y: int, min_dist: float, parents: list[(int, int)], move, turns, score):
         self.x = x
         self.y = y
         self.min_dist = min_dist 
@@ -50,16 +34,16 @@ class Node:
 
 
 def traverse_grid_py(grid: list[list[float]], start: tuple[int, int], end_y: int, moves) -> list[Node]:
-    
     init_x, init_y = start
     init_node = Node(init_x, init_y, grid[init_y][init_x], [], 0, 0, calc_score(grid[init_y][init_x], 0, []))
 
     queue = [init_node]
     visited = set()
 
+    max_node = Node(0, 0, 0, [], 0, 0, 0) 
+
     while queue:
         node = heapq.heappop(queue)
-
         if (node.x, node.y) in visited:
             continue
         visited.add((node.x, node.y))
@@ -71,10 +55,10 @@ def traverse_grid_py(grid: list[list[float]], start: tuple[int, int], end_y: int
                 continue
 
             if new_y == end_y:
-                return node.parents + [node]
+                return node.parents + [(node.x, node.y)]         
    
             turns = node.turns + (move != node.move)
-            new_path = node.parents + [node]
+            new_path = node.parents + [(node.x, node.y)]
             new_min_dist = min(grid[new_y][new_x], node.min_dist)
 
             score = calc_score(new_min_dist, turns, new_path)
@@ -82,8 +66,10 @@ def traverse_grid_py(grid: list[list[float]], start: tuple[int, int], end_y: int
             new_node = Node(new_x, new_y, new_min_dist, new_path, move, turns, score)
             heapq.heappush(queue, new_node)
 
+            if new_node.score > max_node.score:
+                max_node = new_node
 
-    return None
+    return max_node.parents + [(node.x, node.y)] 
 
 
 def get_moves(angle_step, max_angle, move_dist, resolution):
@@ -114,69 +100,59 @@ def file_read(f):
     return angles, distances
 
 
-def main():
+def plot_map_path(grid_map, path):
+    """
+    Plotting the grid map and the path
+    """
+    plt.imshow(grid_map, cmap="hot_r", origin="lower")
+    plt.colorbar()
+    for node in path:
+        plt.plot(node[0], node[1], 'ro')
+    plt.show()
+
+
+def main(file_name, angle_step, move_step, xy_resolution, distortion_amt, compare):
     """
     Example usage
     """
     print(__file__, "start")
-    xy_resolution = .1  # grid represend decimeter in the real world  
-    ang, dist = file_read("lidar01.csv")
-    dist = dist * 10
-    moves = get_moves(10, 60, .25, xy_resolution)
+    ang, dist = file_read(file_name)
+    dist = dist * distortion_amt
+    moves = get_moves(angle_step, move_step, .25, xy_resolution)
 
+
+    ### Getting times for Rust
     start = time.time()
-    grid = \
-        scan_to_grid(ang, dist, xy_resolution, 2) 
-    
-    mid = time.time()
-    
+    grid = scan_to_grid(ang, dist, xy_resolution, 2) 
+    middle = time.time()
     path = traverse_grid(grid.grid_map, (40, 0), len(grid.grid_map) - 1, moves)
-    
     end = time.time()
-    
-    print("total time:", end - start) 
-    print("scan to grid time:", mid - start)
-    print("traverse grid time:", end - mid)
-    
-    plt.imshow(grid.grid_map, cmap="hot_r", origin="lower")
-    plt.colorbar()
-    
-    if path:
-        for node in path:
-            plt.plot(node.x, node.y, 'ro')
 
-    plt.show()
+    print("RUST:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start) 
 
-    xy_resolution = .1  # grid represend decimeter in the real world  
-    ang, dist = file_read("lidar02.csv")
-    moves = get_moves(10, 60, .25, xy_resolution)
-    print(moves)
+    plot_map_path(grid.grid_map, path)
 
-    start = time.time()
-    grid = \
-        scan_to_grid(ang, dist, xy_resolution, 2) 
-    
-    mid = time.time()
-    
-    print("scan to grid time:", mid - start)
-    
-    path = traverse_grid(grid.grid_map, (40, 0), len(grid.grid_map) - 1, moves)
-    
-    end = time.time()
-    
-    print("traverse grid time:", end - mid)
-    print("total time:", end - start) 
+    if compare:
+        ### Getting times for Python
+        start = time.time()
+        grid = scan_to_grid(ang, dist, xy_resolution, 2)
+        middle = time.time()
+        path = traverse_grid_py(grid.grid_map, (40, 0), len(grid.grid_map) - 1, moves)
+        end = time.time()   
 
-    plt.imshow(grid.grid_map, cmap="hot_r", origin="lower")
-    plt.colorbar()
-    
-    if path:
-        for node in path:
-            plt.plot(node.x, node.y, 'ro')
-
-    plt.show()
+        print("PYTHON:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start)
+        plot_map_path(grid.grid_map, path)
 
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--file_name', default="lidar01.csv")
+    parser.add_argument('--angle_step', type=int, default=10)
+    parser.add_argument('--move_step', type=int, default=60)
+    parser.add_argument('--xy_resolution', type=float, default=0.1)
+    parser.add_argument('--distortion_amt', type=int, default=10)
+    parser.add_argument('--compare', type=bool, default=True)
 
-if __name__ == '__main__':
-    main()    
+    args = parser.parse_args()
+
+    main(args.file_name, args.angle_step, args.move_step, args.xy_resolution, args.distortion_amt, args.compare)
