@@ -19,6 +19,8 @@ void setup() {
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
 
   delay(10);
+  
+
 }
 
 
@@ -63,12 +65,21 @@ bool isInteger(String str) {
 bool parseIntegerFromSerial(int* output) {
   if (Serial.available() > 0) { // Check if serial data is available
     String input = Serial.readStringUntil('\n'); // Read serial input until newline character
-    if (isInteger(input)) { // Check if input is a valid integer
-      *output = input.toInt(); // Convert input string to integer and store in output
-      return true; // Return true for valid input
-    } else {
-      Serial.println("Invalid input! Please enter an integer."); // Print error message for invalid input
-      return false; // Return false for invalid input
+    char commandType = input.charAt(0);
+    input = input.substring(1);
+    switch(commandType) {
+      case 'S':
+        if (isInteger(input)) { // Check if input is a valid integer
+          *output = input.toInt(); // Convert input string to integer and store in output
+          return true; // Return true for valid input
+        } else {
+          Serial.println("Invalid input! Please enter an integer."); // Print error message for invalid input
+          return false; // Return false for invalid input
+        }
+        break;
+      case 'B':
+        tone(11, 500, 100);
+        break;
     }
   }
   return false; // Return false if no serial data is available
