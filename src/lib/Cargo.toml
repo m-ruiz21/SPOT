@@ -9,6 +9,9 @@ name = "spot_rs"
 crate-type = ["cdylib"]
 
 [dependencies]
+ordered-float = "4.2.0"
+priority-queue = "2.0.2"
+priq = "0.1.0"
 pyo3 = "0.21.1"
 rstat = "0.6"
 statrs = "0.16.0"
