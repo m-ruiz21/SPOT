@@ -2,22 +2,24 @@ use pyo3::prelude::*;
 
 const EXTEND_AREA: f64 = 1.0; 
 
+/// Represents a Gaussian grid map and its metadata
+/// 
+/// # Attributes
+/// 
+/// * `grid_map` - A 2D vector representing the grid map.
+/// * `scanner_pos` - A tuple representing the position of the scanner in the grid map.
+/// * `width` - Width of the grid map.
+/// * `length` - Length of the grid map.
 #[pyclass]
 pub struct GaussianGrid {
     #[pyo3(get)]
-    pub grid_map: Vec<Vec<f64>>,
+    pub grid_map: Vec<Vec<f64>>,    
     #[pyo3(get)]
-    pub min_x: f64,
+    pub scanner_pos: (usize, usize), 
     #[pyo3(get)]
-    pub max_x: f64,
+    pub width: usize,             
     #[pyo3(get)]
-    pub min_y: f64,
-    #[pyo3(get)]
-    pub max_y: f64,
-    #[pyo3(get)]
-    pub x_width: usize,
-    #[pyo3(get)]
-    pub y_width: usize,
+    pub length: usize,             
 }
 
 
@@ -45,11 +47,11 @@ pub fn scan_to_grid(angles: Vec<f64>, distances: Vec<f64>, resolution: f64, dang
         .map(|(d, a)| d * a.cos())
         .collect();
 
-    let (min_x, min_y, max_x, max_y, x_width, y_width) = calc_grid_map_config(occupied_x.clone(), occupied_y.clone(), resolution);
+    let (min_y, min_x, scanner_pos, width, length) = calc_grid_map_config(occupied_x.clone(), occupied_y.clone(), resolution);
 
-    let mut grid_map = vec![vec![0.0; y_width]; x_width];
-    for ix in 0..x_width {
-        for iy in 0..y_width {
+    let mut grid_map = vec![vec![0.0; length]; width];
+    for ix in 0..width {
+        for iy in 0..length {
             let x = min_x + ix as f64 * resolution;
             let y = min_y + iy as f64 * resolution;
             
@@ -68,12 +70,9 @@ pub fn scan_to_grid(angles: Vec<f64>, distances: Vec<f64>, resolution: f64, dang
 
     GaussianGrid {
         grid_map,
-        min_x,
-        max_x,
-        min_y,
-        max_y,
-        x_width,
-        y_width,
+        scanner_pos,
+        width,
+        length,
     }
 }
 
@@ -88,8 +87,8 @@ pub fn scan_to_grid(angles: Vec<f64>, distances: Vec<f64>, resolution: f64, dang
 /// 
 /// # Returns
 /// 
-/// * A tuple containing the minimum x, minimum y, maximum x, maximum y, x width, and y width of the grid map.
-fn calc_grid_map_config(occupied_x: Vec<f64>, occupied_y: Vec<f64>, resolution: f64) -> (f64, f64, f64, f64, usize, usize) {
+/// * A tuple containing the minimum x, minimum y, the position of the scanner on the map, x width, and y width of the grid map.
+fn calc_grid_map_config(occupied_x: Vec<f64>, occupied_y: Vec<f64>, resolution: f64) -> (f64, f64, (usize, usize), usize, usize) {
     let min_x = (occupied_x
             .iter()
             .min_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
@@ -113,8 +112,13 @@ fn calc_grid_map_config(occupied_x: Vec<f64>, occupied_y: Vec<f64>, resolution: 
             .unwrap() + EXTEND_AREA / 2.0
         ).round();
 
-    let x_width = ((max_x - min_x) / resolution).round() as usize;
-    let y_width = ((max_y - min_y) / resolution).round() as usize;
-    
-    (min_x, min_y, max_x, max_y, x_width, y_width)
+    let width = ((max_x - min_x) / resolution).round() as usize;
+    let length = ((max_y - min_y) / resolution).round() as usize;
+
+    let scanner_pos = (
+        ((0.0 - min_y) / resolution).round() as usize,
+        ((0.0 - min_x) / resolution).round() as usize,
+    );
+
+    (min_y, min_x, scanner_pos, width, length)
 }

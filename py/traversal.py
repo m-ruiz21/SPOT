@@ -116,16 +116,22 @@ def main(file_name, angle_step, move_step, xy_resolution, distortion_amt, compar
     Example usage
     """
     print(__file__, "start")
+
+    # ONLY FOR EXAMPLE
     ang, dist = file_read(file_name)
     dist = dist * distortion_amt
-    moves = get_moves(angle_step, move_step, .25, xy_resolution)
 
+    occupied_x = (np.cos(ang) * dist) / xy_resolution
+    print(min(occupied_x))
+
+    # ONLY FOR EXAMPLE
+    moves = get_moves(angle_step, move_step, .25, xy_resolution)
 
     ### Getting times for Rust
     start = time.time()
     grid = scan_to_grid(ang, dist, xy_resolution, 2) 
     middle = time.time()
-    path = traverse_grid(grid.grid_map, (40, 0), len(grid.grid_map) - 1, moves)
+    path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves)
     end = time.time()
 
     print("RUST:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start) 
@@ -137,7 +143,7 @@ def main(file_name, angle_step, move_step, xy_resolution, distortion_amt, compar
         start = time.time()
         grid = scan_to_grid(ang, dist, xy_resolution, 2)
         middle = time.time()
-        path = traverse_grid_py(grid.grid_map, (40, 0), len(grid.grid_map) - 1, moves)
+        path = traverse_grid_py(grid.grid_map, grid.scanner_pos , grid.width - 1, moves)
         end = time.time()   
 
         print("PYTHON:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start)
