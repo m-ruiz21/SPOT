@@ -49,9 +49,3 @@ Converts LIDAR scan to gaussian grid.
 
 ### traverse_grid()
 This function is used to traverse the grid.
-
-## Data
-- `__all__`: ['scan_to_grid', 'point_cloud_to_scan', 'traverse_grid', 'EuclideanGrid', 'Node']
-
-## File Location
-- `/Users/mr/opt/SPOT/venv/lib/python3.11/site-packages/spot_rs/__init__.py`
