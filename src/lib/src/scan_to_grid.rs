@@ -13,7 +13,7 @@ const EXTEND_AREA: f64 = 1.0;
 /// 
 /// # Returns
 /// 
-/// * `GuassianGrid` - Contains grid and its metadata
+/// * `Euclidean Grid` - Contains grid and its metadata
 #[pyfunction]
 #[pyo3(text_signature = "(angles: list<float>, distances: list<float>, resolution: float, danger_rad: float, /)")]
 pub fn scan_to_grid(angles: Vec<f64>, distances: Vec<f64>, resolution: f64, danger_rad: f64) -> EuclideanGrid {
