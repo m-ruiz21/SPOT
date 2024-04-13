@@ -3,7 +3,7 @@ use crate ::models::eucledian_grid::EuclideanGrid;
 
 const EXTEND_AREA: f64 = 1.0; 
 
-/// Converts LIDAR scan to gaussian grid.
+/// Converts LIDAR scan to euclidean grid.
 /// # Arguments
 /// 
 /// * `angles` - A vector of angles in radians.

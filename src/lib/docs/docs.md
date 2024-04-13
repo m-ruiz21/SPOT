@@ -24,16 +24,18 @@ This class represents a node in the grid.
 
 ## Functions
 
-### point_cloud_to_scan(points)
+### point_cloud_to_scan(points: list[tuple[float, float, float]], scale: float)
+**UNTESTED**
 Converts 3D point cloud to 2D scan.
 
 #### Arguments
 - `points`: A vector of 3D points.
+- `scale`: The real life scale the points represent
 
 #### Returns
 - `Tuple`: A tuple of two vectors containing angles and distances of the scan.
 
-### scan_to_grid(angles, distances, resolution, danger_rad)
+### scan_to_grid(angles: list\[tuple\], distances: list\[tuple\], resolution: float, danger_rad: float) -> 
 Converts LIDAR scan to gaussian grid.
 
 #### Arguments
