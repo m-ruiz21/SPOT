@@ -16,7 +16,7 @@ while getopts "cseib" opt; do
             ;;
         b)
             cd src/lib
-            maturin build 
+            maturin develop --release 
             whl=$(ls target/wheels | grep *.whl)
             python -m pip install $whl
             cd ../../
@@ -28,6 +28,10 @@ while getopts "cseib" opt; do
 done
 
 if [ "$1" == "setup" ]; then
+        echo "Installing Rust..."
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+        echo "Installing Python3.11 Using Brew"
+        brew install python@3.11
         echo "Setting up virtual environment..." 
         ./SPOT -c
         echo "Starting Virtual Environment..."

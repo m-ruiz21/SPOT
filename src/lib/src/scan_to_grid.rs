@@ -1,27 +1,7 @@
 use pyo3::prelude::*;
+use crate ::models::eucledian_grid::EuclideanGrid;
 
 const EXTEND_AREA: f64 = 1.0; 
-
-/// Represents a Gaussian grid map and its metadata
-/// 
-/// # Attributes
-/// 
-/// * `grid_map` - A 2D vector representing the grid map.
-/// * `scanner_pos` - A tuple representing the position of the scanner in the grid map.
-/// * `width` - Width of the grid map.
-/// * `length` - Length of the grid map.
-#[pyclass]
-pub struct GaussianGrid {
-    #[pyo3(get)]
-    pub grid_map: Vec<Vec<f64>>,    
-    #[pyo3(get)]
-    pub scanner_pos: (usize, usize), 
-    #[pyo3(get)]
-    pub width: usize,             
-    #[pyo3(get)]
-    pub length: usize,             
-}
-
 
 /// Converts LIDAR scan to gaussian grid.
 /// # Arguments
@@ -36,7 +16,7 @@ pub struct GaussianGrid {
 /// * `GuassianGrid` - Contains grid and its metadata
 #[pyfunction]
 #[pyo3(text_signature = "(angles: list<float>, distances: list<float>, resolution: float, danger_rad: float, /)")]
-pub fn scan_to_grid(angles: Vec<f64>, distances: Vec<f64>, resolution: f64, danger_rad: f64) -> GaussianGrid {
+pub fn scan_to_grid(angles: Vec<f64>, distances: Vec<f64>, resolution: f64, danger_rad: f64) -> EuclideanGrid {
     let occupied_x: Vec<f64> = distances.iter()
         .zip(angles.iter())
         .map(|(d, a)| d * a.sin())
@@ -68,7 +48,7 @@ pub fn scan_to_grid(angles: Vec<f64>, distances: Vec<f64>, resolution: f64, dang
         }
     }
 
-    GaussianGrid {
+    EuclideanGrid {
         grid_map,
         scanner_pos,
         width,

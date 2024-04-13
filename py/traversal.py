@@ -121,9 +121,6 @@ def main(file_name, angle_step, move_step, xy_resolution, distortion_amt, compar
     ang, dist = file_read(file_name)
     dist = dist * distortion_amt
 
-    occupied_x = (np.cos(ang) * dist) / xy_resolution
-    print(min(occupied_x))
-
     # ONLY FOR EXAMPLE
     moves = get_moves(angle_step, move_step, .25, xy_resolution)
 
