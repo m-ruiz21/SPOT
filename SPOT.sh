@@ -16,7 +16,8 @@ while getopts "cseib" opt; do
             ;;
         b)
             cd src/lib
-            maturin develop --release 
+            #maturin develop --release 
+            maturin build
             python -m pip install target/wheels/$(ls target/wheels | grep .whl$)
             cd ../../
             ;;
