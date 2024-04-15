@@ -12,13 +12,12 @@ while getopts "cseib" opt; do
             deactivate
             ;;
         i)
-            python -m pip install -r requirements.txt
+            ls
             ;;
         b)
             cd src/lib
             maturin develop --release 
-            whl=$(ls target/wheels | grep *.whl)
-            python -m pip install $whl
+            python -m pip install target/wheels/$(ls target/wheels | grep .whl$)
             cd ../../
             ;;
         \?)
