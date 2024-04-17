@@ -1,5 +1,9 @@
 #include <Wire.h>
-#include <Adafruit_PWMServoDriver.h>
+#include <Servo.h>
+
+Servo myservo;  // create servo object to control a servo
+
+// #include <Adafruit_PWMServoDriver.h>
 
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
@@ -7,16 +11,20 @@ bool isInteger(String str);
 bool parseIntegerFromSerial(int* output);
 
 // called this way, it uses the default address 0x40
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+// Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 
 void setup() {
   Serial.begin(9600);
   Serial.setTimeout(100);
 
-  pwm.begin();
-  pwm.setOscillatorFrequency(27000000);
-  pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
+  // pwm.begin();
+  // pwm.setOscillatorFrequency(27000000);
+  // pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
+    // pinMode(A5, OUTPUT);  // sets the pin as output
+      myservo.attach(A5);  // attaches the servo on pin 9 to the servo object
+
+
 
   delay(10);
   
@@ -32,7 +40,8 @@ int target = -1;
 void loop() {
   // Read an integer (with newline) over serial and set the servo's target PWM to it
   // Values should be between 100 and 500
-  parseIntegerFromSerial(&target);
+  if(parseIntegerFromSerial(&target)) {
+  }
 
   // Don't do anything until we've received a command
   if(target == -1) { return; }
@@ -45,7 +54,16 @@ void loop() {
     angle = target;
   }
   
-  pwm.setPWM(0, 0, angle);
+  // Serial.print("Setting angle to ");
+  Serial.println(angle);
+  // pwm.setPWM(0, 0, angle);
+  // (right) = 10
+  // (center) = 90
+  // (left) = 170
+  int actualAngle = map(angle, -45, 45, 170, 10);
+  
+  myservo.write(actualAngle);
+
   delay(10);
 
 }
