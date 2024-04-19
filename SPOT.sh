@@ -12,7 +12,7 @@ while getopts "cseib" opt; do
             deactivate
             ;;
         i)
-            python -m pip install -r requirements.txt
+            ls
             ;;
         b)
             cd src/lib
