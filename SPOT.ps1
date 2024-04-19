@@ -30,12 +30,7 @@ if ($InstallDeps) {
 
 if ($Build) {
     Set-Location src/lib
-    maturin build 
-    
-    $whl = Get-ChildItem -Path "target/wheels" -Filter *.whl | Select-Object -First 1 -ExpandProperty Name
-
-    py -m pip install --force-reinstall target/wheels/$whl
-
+    maturin develop --release     
     Set-Location ../../
 }
 
