@@ -6,72 +6,6 @@ from spot_rs import traverse_grid
 import argparse
 import heapq
 
-def valid_move(x, y, grid):
-    out_of_bounds = x < 0 or x >= len(grid[0]) or y < 0 or y >= len(grid)
-
-    if out_of_bounds:
-        return False
-    
-    return grid[y][x] > .6
-
-
-def calc_score(min_dist, turns, path):
-    return min_dist - .5 * turns / (len(path) + 1)
-
-
-class Node:
-    def __init__(self, x: int, y: int, min_dist: float, parents: list[(int, int)], move, turns, score):
-        self.x = x
-        self.y = y
-        self.min_dist = min_dist 
-        self.parents = parents
-        self.move = move
-        self.turns = turns
-        self.score = -score
-
-    def __lt__(self, other):
-        return self.score < other.score 
-
-
-def traverse_grid_py(grid: list[list[float]], start: tuple[int, int], end_y: int, moves) -> list[Node]:
-    init_x, init_y = start
-    init_node = Node(init_x, init_y, grid[init_y][init_x], [], 0, 0, calc_score(grid[init_y][init_x], 0, []))
-
-    queue = [init_node]
-    visited = set()
-
-    max_node = Node(0, 0, 0, [], 0, 0, 0) 
-
-    while queue:
-        node = heapq.heappop(queue)
-        if (node.x, node.y) in visited:
-            continue
-        visited.add((node.x, node.y))
-
-        for move, (dx, dy) in enumerate(moves): 
-            new_x, new_y = node.x + dx, node.y + dy
-
-            if not valid_move(new_x, new_y, grid):
-                continue
-
-            if new_y == end_y:
-                return node.parents + [(node.x, node.y)]         
-   
-            turns = node.turns + (move != node.move)
-            new_path = node.parents + [(node.x, node.y)]
-            new_min_dist = min(grid[new_y][new_x], node.min_dist)
-
-            score = calc_score(new_min_dist, turns, new_path)
-
-            new_node = Node(new_x, new_y, new_min_dist, new_path, move, turns, score)
-            heapq.heappush(queue, new_node)
-
-            if new_node.score > max_node.score:
-                max_node = new_node
-
-    return max_node.parents + [(node.x, node.y)] 
-
-
 def get_moves(angle_step, max_angle, move_dist, resolution):
     max_dist = round(move_dist / resolution)
 
@@ -111,42 +45,87 @@ def plot_map_path(grid_map, path):
     plt.show()
 
 
-def main(file_name, angle_step, move_step, xy_resolution, distortion_amt, compare):
+def move_angle(curr_node, prev_node):
+    x1, x2 = prev_node[0], curr_node[0]
+    y1, y2 = prev_node[1], curr_node[1]
+    angle = - ((np.arctan2(y2 - y1, x2 - x1) * 180/np.pi) - 90)
+    return angle
+
+def move_dist(curr_node, prev_node):
+    x1, x2 = prev_node[0], curr_node[0]
+    y1, y2 = prev_node[1], curr_node[1]
+    dist = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    return dist
+
+PORT_NAME = '/dev/ttyUSB0' # for linux
+MINIMUM_SAMPLE_SIZE = 180 # 180 readings
+from adafruit_rplidar import RPLidar, RPLidarException
+lidar = RPLidar(None, PORT_NAME, timeout=3)
+
+def lidar_read():
+    global lidar
+    while True:
+        try:
+            angles = []
+            distances = []
+            for scan in lidar.iter_scans():
+                for (_, angle, distance) in scan:
+                    if angle > 180:
+                        continue
+                    angles += [np.radians(angle)]
+                    distances += [distance / 1000]
+            
+                if len(angles) >= MINIMUM_SAMPLE_SIZE:
+                    return angles, np.array(distances)
+
+        except RPLidarException as e:
+            print(f'RPLidar Exception: {e}')
+            print("Restarting Lidar...")
+            lidar.stop()
+            lidar.disconnect()
+            lidar = RPLidar(None, PORT_NAME, timeout=3)
+
+
+def main(file_name, angle_step, move_step, xy_resolution, distortion_amt):
     """
     Example usage
     """
     print(__file__, "start")
 
     # ONLY FOR EXAMPLE
-    ang, dist = file_read(file_name)
+    # ang, dist = file_read(file_name)
+    ang, dist = lidar_read()
+    print("angles:", ang)
+    print("distances:", dist)
     dist = dist * distortion_amt
 
     # ONLY FOR EXAMPLE
     moves = get_moves(angle_step, move_step, .25, xy_resolution)
-
+    
     ### Getting times for Rust
     start = time.time()
     grid = scan_to_grid(ang, dist, xy_resolution, 2) 
     middle = time.time()
     path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves)
     end = time.time()
-
+    
+    # Testing Code for angle and distance
+    angle_list = []
+    last_angle = -1000
+    for i in range(1, len(path)):
+        curr_node, prev_node = path[i], path[i - 1]
+        curr_angle =  move_angle(curr_node, prev_node)
+        curr_dist = move_dist(curr_node, prev_node)
+        if last_angle != curr_angle:
+            angle_list.append((curr_dist, curr_angle))
+        
+        last_angle = curr_angle
+        
+    print(angle_list)
     print("RUST:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start) 
 
     plot_map_path(grid.grid_map, path)
-
-    if compare:
-        ### Getting times for Python
-        start = time.time()
-        grid = scan_to_grid(ang, dist, xy_resolution, 2)
-        middle = time.time()
-        path = traverse_grid_py(grid.grid_map, grid.scanner_pos , grid.width - 1, moves)
-        end = time.time()   
-
-        print("PYTHON:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start)
-        plot_map_path(grid.grid_map, path)
-
-
+        
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--file_name', default="lidar01.csv")
@@ -154,8 +133,7 @@ if __name__ == "__main__":
     parser.add_argument('--move_step', type=int, default=60)
     parser.add_argument('--xy_resolution', type=float, default=0.1)
     parser.add_argument('--distortion_amt', type=float, default=10)
-    parser.add_argument('--compare', type=bool, default=True)
 
     args = parser.parse_args()
 
-    main(args.file_name, args.angle_step, args.move_step, args.xy_resolution, args.distortion_amt, args.compare)
+    main(args.file_name, args.angle_step, args.move_step, args.xy_resolution, args.distortion_amt)
