@@ -28,7 +28,7 @@ def servo_send(pwm):
 		# 	ser.open()
 
 		# pwm = int(input("Enter PWM Value: "))
-		bytes = ("S"+str(pwm)+"\n") # .encode()
+		bytes = ("S"+str(int(pwm))+"\n") # .encode()
 		ser.write(bytes)
 		print(f"Sent PWM value: {pwm}")
 		# ser.flush()
