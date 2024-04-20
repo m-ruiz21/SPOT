@@ -28,9 +28,18 @@ def process_data(angles, distances):
     scan_to_csv(angles, distances)
     # can change this to our main flow later
 
+    distances = distances * 1000
+    xy_resolution = .100
+    danger_rad = 2
+    grid = scan_to_grid(angles, distances, xy_resolution, danger_rad)
+    
+    plt.imshow(grid.grid_map, cmap="hot_r", origin="lower")
+    plt.colorbar()
+    plt.show()
 
-angles = []
-distances = []
+
+angles = np.array([])
+distances = np.array([])
 
 try:
     while True:
