@@ -153,7 +153,7 @@ if __name__ == "__main__":
     parser.add_argument('--angle_step', type=int, default=10)
     parser.add_argument('--move_step', type=int, default=60)
     parser.add_argument('--xy_resolution', type=float, default=0.1)
-    parser.add_argument('--distortion_amt', type=int, default=10)
+    parser.add_argument('--distortion_amt', type=float, default=10)
     parser.add_argument('--compare', type=bool, default=True)
 
     args = parser.parse_args()

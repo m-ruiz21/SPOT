@@ -3,3 +3,5 @@ opencv-python
 rplidar
 maturin
 matplotlib
+Adafruit_CircuitPython_RPLIDAR
+pyserial

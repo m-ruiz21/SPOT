@@ -24,7 +24,7 @@ if ($EndEnv) {
     deactivate
 } 
 
-if ($InstallDeps) {
+if ($Install) {
     py -m pip install -r .\requirements.txt
 }
 
