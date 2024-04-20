@@ -26,6 +26,7 @@ def scan_to_csv(angles, distances):
 
 def process_data(angles, distances): 
     scan_to_csv(angles, distances)
+    # can change this to our main flow later
 
 
 angles = []
