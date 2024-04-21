@@ -92,7 +92,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
     print(__file__, "start")
     
     moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
-    # prev_angle = -10000
+    prev_angle = -10000
     while True:
         # ang, dist = file_read('lidar01.csv')
         ang, dist = lidar_read()
@@ -110,14 +110,14 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         if len(path) > 1:
             # Testing Code for angle and distance
             print('path[1]', path[1])
-            print('path[7]', path[7])
+            print('path[12]', path[12])
             
-            angle = move_angle(path[1], path[7])
+            angle = move_angle(path[1], path[12])
             print('angle = ', angle)
             
-            # if prev_angle != angle:
-            #     beep_send()
-            # prev_angle = angle
+            if prev_angle != angle:
+                beep_send()
+            prev_angle = angle
             
             servo_send(angle)
         else:
