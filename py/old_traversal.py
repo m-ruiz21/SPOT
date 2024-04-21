@@ -4,7 +4,7 @@ import time
 from spot_rs import scan_to_grid 
 from spot_rs import traverse_grid
 import argparse
-from servo_send import servo_send, beep_send
+import heapq
 
 def get_moves(angle_step, max_angle, move_dist, resolution):
     max_dist = round(move_dist / resolution)
@@ -51,6 +51,11 @@ def move_angle(curr_node, prev_node):
     angle = - ((np.arctan2(y2 - y1, x2 - x1) * 180/np.pi) - 90)
     return angle
 
+def move_dist(curr_node, prev_node):
+    x1, x2 = prev_node[0], curr_node[0]
+    y1, y2 = prev_node[1], curr_node[1]
+    dist = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    return dist
 
 PORT_NAME = '/dev/ttyUSB0' # for linux
 MINIMUM_SAMPLE_SIZE = 180 # 180 readings
@@ -65,11 +70,8 @@ def lidar_read():
             distances = []
             for scan in lidar.iter_scans():
                 for (_, angle, distance) in scan:
-                    if angle < 180:
+                    if angle > 180:
                         continue
-                    
-                    angle -= 180
-                    
                     angles += [np.radians(angle)]
                     distances += [distance / 1000]
             
@@ -84,59 +86,54 @@ def lidar_read():
             lidar = RPLidar(None, PORT_NAME, timeout=3)
 
 
-def main(angle_step, max_angle, move_step, xy_resolution):
+def main(file_name, angle_step, move_step, xy_resolution, distortion_amt):
     """
     Example usage
     """
     print(__file__, "start")
+
+    # ONLY FOR EXAMPLE
+    # ang, dist = file_read(file_name)
+    ang, dist = lidar_read()
+    print("angles:", ang)
+    print("distances:", dist)
+    dist = dist * distortion_amt
+
+    # ONLY FOR EXAMPLE
+    moves = get_moves(angle_step, move_step, .25, xy_resolution)
     
-    moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
+    ### Getting times for Rust
+    start = time.time()
+    grid = scan_to_grid(ang, dist, xy_resolution, 2) 
+    middle = time.time()
+    path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves)
+    end = time.time()
+    
+    # Testing Code for angle and distance
+    angle_list = []
+    last_angle = -1000
+    for i in range(1, len(path)):
+        curr_node, prev_node = path[i], path[i - 1]
+        curr_angle =  move_angle(curr_node, prev_node)
+        curr_dist = move_dist(curr_node, prev_node)
+        if last_angle != curr_angle:
+            angle_list.append((curr_dist, curr_angle))
+        
+        last_angle = curr_angle
+        
+    print(angle_list)
+    print("RUST:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start) 
 
-    while True:
-        # ang, dist = file_read('lidar01.csv')
-        ang, dist = lidar_read()
-        # print("angles:", ang)
-        # print("distances:", dist)
-        dist = dist * 10
-        
-        ### Getting times for Rust
-        start = time.time()
-        grid = scan_to_grid(ang, dist, xy_resolution, 2) 
-        middle = time.time()
-        path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, .1)
-        end = time.time()
-        
-        if len(path) > 1:
-            # Testing Code for angle and distance
-            print('path[0]', path[0])
-            
-            angle = move_angle(path[1], path[0])
-            
-            servo_send(angle)
-        else:
-            beep_send()
-        
-        
-        print("RUST:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start) 
-
-        plot_map_path(grid.grid_map, path)
-        
+    plot_map_path(grid.grid_map, path)
         
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process Parameters for SPOT.')
-    
-    # number of degrees in between valid moves
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--file_name', default="lidar01.csv")
     parser.add_argument('--angle_step', type=int, default=10)
-    
-    # max angle either direction
-    parser.add_argument('--max_angle', type=int, default=60)
-    
-    # number of meters robot moves in between valid moves
-    parser.add_argument('--move_step', type=float, default=.25)
-    
-    # % of dm^2 each grid represents
-    parser.add_argument('--xy_resolution', type=float, default=.1)
+    parser.add_argument('--move_step', type=int, default=60)
+    parser.add_argument('--xy_resolution', type=float, default=0.1)
+    parser.add_argument('--distortion_amt', type=float, default=10)
 
     args = parser.parse_args()
 
-    main(args.angle_step, args.max_angle, args.move_step, args.xy_resolution)
+    main(args.file_name, args.angle_step, args.move_step, args.xy_resolution, args.distortion_amt)

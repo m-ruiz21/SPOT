@@ -39,10 +39,10 @@ def servo_send(pwm):
 def beep_send():
 	try:
 		# Open the serial port
-		if not ser.isOpen():
-			ser.open()
+		# if not ser.isOpen():
+		# 	ser.open()
 
-		bytes = ("B\n").encode()
+		bytes = ("B\n") #.encode()
 		ser.write(bytes)
 		print(f"Sent Beep")
 
