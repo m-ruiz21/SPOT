@@ -45,9 +45,10 @@ def plot_map_path(grid_map, path):
     plt.show()
 
 
-def move_angle(curr_node, prev_node):
+def move_angle(prev_node, curr_node):
     x1, x2 = prev_node[0], curr_node[0]
     y1, y2 = prev_node[1], curr_node[1]
+    print('x1', x1, 'y1', y2, 'x2', x2, 'y2', y2)
     angle = - ((np.arctan2(y2 - y1, x2 - x1) * 180/np.pi) - 90)
     return angle
 
@@ -68,7 +69,7 @@ def lidar_read():
                     if angle < 180:
                         continue
                     
-                    angle -= 180
+                    angle = 180 - (angle - 180)
                     
                     angles += [np.radians(angle)]
                     distances += [distance / 1000]
@@ -91,7 +92,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
     print(__file__, "start")
     
     moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
-
+    # prev_angle = -10000
     while True:
         # ang, dist = file_read('lidar01.csv')
         ang, dist = lidar_read()
@@ -108,9 +109,15 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         
         if len(path) > 1:
             # Testing Code for angle and distance
-            print('path[0]', path[0])
+            print('path[1]', path[1])
+            print('path[7]', path[7])
             
-            angle = move_angle(path[1], path[0])
+            angle = move_angle(path[1], path[7])
+            print('angle = ', angle)
+            
+            # if prev_angle != angle:
+            #     beep_send()
+            # prev_angle = angle
             
             servo_send(angle)
         else:
@@ -119,7 +126,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         
         print("RUST:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start) 
 
-        plot_map_path(grid.grid_map, path)
+        #plot_map_path(grid.grid_map, path)
         
         
 if __name__ == "__main__":
