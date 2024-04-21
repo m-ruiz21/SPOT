@@ -55,6 +55,9 @@ def move_angle(prev_node, curr_node):
 
 PORT_NAME = '/dev/ttyUSB0' # for linux
 MINIMUM_SAMPLE_SIZE = 180 # 180 readings
+PATH_LOOKAHEAD_FOR_ANGLE = 12 # look 12 steps ahead to calculate angle
+
+
 from adafruit_rplidar import RPLidar, RPLidarException
 lidar = RPLidar(None, PORT_NAME, timeout=3)
 
@@ -107,12 +110,12 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, .1)
         end = time.time()
         
-        if len(path) > 1:
+        if len(path) > PATH_LOOKAHEAD_FOR_ANGLE:
             # Testing Code for angle and distance
-            print('path[1]', path[1])
-            print('path[12]', path[12])
+            print('path[0]', path[0])
+            print(f'path[{PATH_LOOKAHEAD_FOR_ANGLE}]', path[PATH_LOOKAHEAD_FOR_ANGLE])
             
-            angle = move_angle(path[1], path[12])
+            angle = move_angle(path[0], path[PATH_LOOKAHEAD_FOR_ANGLE])
             print('angle = ', angle)
             
             if prev_angle != angle:
