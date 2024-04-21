@@ -3,7 +3,7 @@ Description=Start SPOT script
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c "source /home/pi/SPOT/venv/bin/activate; python /home/pi/SPOT/py/traversal.py"
+ExecStart=/bin/sh -c "/home/pi/SPOT/start_spot.sh"
 
 [Install]
 WantedBy=multi-user.target
