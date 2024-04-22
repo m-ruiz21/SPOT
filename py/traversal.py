@@ -76,7 +76,7 @@ def lidar_read():
         try:
             angles = []
             distances = []
-            for scan in lidar.iter_scans():
+            for scan in lidar.iter_scans(MINIMUM_SAMPLE_SIZE*2, MINIMUM_SAMPLE_SIZE):
                 for (_, angle, distance) in scan:
                     if angle < 180:
                         continue
