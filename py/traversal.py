@@ -7,6 +7,9 @@ import argparse
 from servo_send import servo_send, beep_send
 
 def get_moves(angle_step, max_angle, move_dist, resolution):
+    """
+    Gets all possible moves for SPOT 
+    """
     max_dist = round(move_dist / resolution)
 
     moves = [(0, max_dist)]
@@ -16,7 +19,6 @@ def get_moves(angle_step, max_angle, move_dist, resolution):
         moves += [(x, y), (-x, y)]
 
     return moves
-
 
 def file_read(f):
     """
@@ -46,6 +48,9 @@ def plot_map_path(grid_map, path):
 
 
 def calculate_angle(prev_node, curr_node):
+    """
+    Finds angle for move
+    """
     x1, x2 = prev_node[0], curr_node[0]
     y1, y2 = prev_node[1], curr_node[1]
 
@@ -109,15 +114,10 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         print("...done")
         # print("angles:", ang)
         # print("distances:", dist)
-        dist = dist * 10
         
-        ### Getting times for Rust
-        start = time.time()
         grid = scan_to_grid(ang, dist, xy_resolution, 2) 
-        middle = time.time()
         path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, .1)
-        end = time.time()
-        
+
         if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE:
             # Testing Code for angle and distance
             print('path[0]', path[0])
@@ -132,10 +132,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
             
             servo_send(angle)
         else:
-            beep_send()
-        
-        
-        print("RUST:\n\t Scan to grid: ", middle - start, "\n\t Traverse grid: ", end - middle, "\n\t Total: ", end - start) 
+            beep_send()        
 
         #plot_map_path(grid.grid_map, path)
         
