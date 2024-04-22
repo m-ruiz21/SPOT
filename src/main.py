@@ -1,71 +1,150 @@
-from adafruit_rplidar import RPLidar
-from adafruit_rplidar import RPLidarException
 import numpy as np
-from spot_rs import scan_to_grid
 import matplotlib.pyplot as plt
+import time
+from spot_rs import scan_to_grid 
+from spot_rs import traverse_grid
+import argparse
+from utils.servo_send import servo_send, beep_send
 
-# Setup the RPLidar
-# PORT_NAME = '/dev/ttyUSB0' # for linux
+def get_moves(angle_step, max_angle, move_dist, resolution):
+    """
+    Gets all possible moves for SPOT 
+    """
+    max_dist = round(move_dist / resolution)
 
-GRID_RES = 100  # grid represend .1 mm (LIDAR unit) in the real world  
-PORT_NAME = '/dev/cu.usbserial-0001' # for mac
-lidar = RPLidar(None, PORT_NAME, timeout=3)
+    moves = [(0, max_dist)]
+    for angle in range(angle_step, max_angle + 1, angle_step):
+        x = round(np.sin(np.radians(angle)) * max_dist)
+        y = round(np.cos(np.radians(angle)) * max_dist)
+        moves += [(x, y), (-x, y)]
 
-def stop_lidar():
-    lidar.stop()
-    lidar.stop_motor()
-    lidar.disconnect()
-    print("Lidar stopped")
+    return moves
+
+def file_read(f):
+    """
+    Reading LIDAR laser beams (angles and corresponding distance data)
+    """
+    with open(f) as data:
+        measures = [line.split(",") for line in data]
+    angles = []
+    distances = []
+    for measure in measures:
+        angles.append(float(measure[0]))
+        distances.append(float(measure[1]))
+    angles = np.array(angles)
+    distances = np.array(distances)
+    return angles, distances
 
 
-def scan_to_csv(angles, distances):
-    with open("lidar.csv", "w") as f:
-        for i in range(len(angles)):
-            f.write(f"{angles[i]},{distances[i]}\n")
-
-
-def process_data(angles, distances): 
-    scan_to_csv(angles, distances)
-    # can change this to our main flow later
-
-    distances = distances * 1000
-    xy_resolution = .100
-    danger_rad = 2
-    grid = scan_to_grid(angles, distances, xy_resolution, danger_rad)
-    
-    plt.imshow(grid.grid_map, cmap="hot_r", origin="lower")
+def plot_map_path(grid_map, path):
+    """
+    Plotting the grid map and the path
+    """
+    plt.imshow(grid_map, cmap="hot_r", origin="lower")
     plt.colorbar()
+    for node in path:
+        plt.plot(node[0], node[1], 'ro')
     plt.show()
 
 
-angles = np.array([])
-distances = np.array([])
+def move_angle(prev_node, curr_node):
+    """
+    Finds angle for move
+    """
+    x1, x2 = prev_node[0], curr_node[0]
+    y1, y2 = prev_node[1], curr_node[1]
+    print('x1', x1, 'y1', y2, 'x2', x2, 'y2', y2)
+    angle = - ((np.arctan2(y2 - y1, x2 - x1) * 180/np.pi) - 90)
+    return angle
 
-try:
+
+PORT_NAME = '/dev/ttyUSB0' # for linux
+MINIMUM_SAMPLE_SIZE = 180 # 180 readings
+MAX_PATH_LOOKAHEAD_FOR_ANGLE = 7 # look max 12 steps ahead to calculate angle
+
+
+from adafruit_rplidar import RPLidar, RPLidarException
+lidar = RPLidar(None, PORT_NAME, timeout=3)
+
+def lidar_read():
+    global lidar
     while True:
-        for scan in lidar.iter_scans():
-            for (_, angle, distance) in scan:
-                if angle > 180:
-                    continue
-
-                angle = np.radians(angle)
-                angles.append(angle)
-                distances.append(distance)
+        try:
+            angles = []
+            distances = []
+            for scan in lidar.iter_scans():
+                for (_, angle, distance) in scan:   # scan is (quality, angle, dist)
+                    if angle < 180:
+                        continue
+                    
+                    angle = 180 - (angle - 180)
+                    
+                    angles += [np.radians(angle)]
+                    distances += [distance / 1000]
             
-            if len(angles) > 180:
-                break
+                if len(angles) >= MINIMUM_SAMPLE_SIZE:
+                    lidar.stop()
+                    return angles, np.array(distances)
 
-        process_data(angles, distances)
+        except RPLidarException as e:
+            print(f'RPLidar Exception: {e}')
+            print("Restarting Lidar...")
+            lidar.stop()
+            lidar.disconnect()
+            lidar = RPLidar(None, PORT_NAME, timeout=3)
+
+
+def main(angle_step, max_angle, move_step, xy_resolution):
+    """
+    Example usage
+    """
+    print(__file__, "start")
+    
+    moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
+    prev_angle = -10000
+    while True:
+        # ang, dist = file_read('lidar01.csv')
+        ang, dist = lidar_read()
+        # print("angles:", ang)
+        # print("distances:", dist)
         
-        angles.clear()
-        distances.clear()
+        grid = scan_to_grid(ang, dist, xy_resolution, 2) 
+        path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, .1)
 
-except KeyboardInterrupt:
-    print("Recieved Keyboard Interrupt")
-    stop_lidar()
-    exit()
-except RPLidarException as e:
-    print(f'RPLidar Exception: {e}')
+        if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE:
+            # Testing Code for angle and distance
+            print('path[0]', path[0])
+            print(f'path[{MAX_PATH_LOOKAHEAD_FOR_ANGLE}]', path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
+            
+            angle = move_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
+            print('angle = ', angle)
+            
+            if prev_angle != angle:
+                beep_send()
+            prev_angle = angle
+            
+            servo_send(angle)
+        else:
+            beep_send()        
 
+        #plot_map_path(grid.grid_map, path)
+        
+        
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Process Parameters for SPOT.')
+    
+    # number of degrees in between valid moves
+    parser.add_argument('--angle_step', type=int, default=10)
+    
+    # max angle either direction
+    parser.add_argument('--max_angle', type=int, default=60)
+    
+    # number of meters robot moves in between valid moves
+    parser.add_argument('--move_step', type=float, default=.25)
+    
+    # % of dm^2 each grid represents
+    parser.add_argument('--xy_resolution', type=float, default=.1)
 
-stop_lidar()
+    args = parser.parse_args()
+
+    main(args.angle_step, args.max_angle, args.move_step, args.xy_resolution)
