@@ -36,7 +36,7 @@ def file_read(f):
 
 def plot_map_path(grid_map, path):
     """
-    Plotting the grid map and the path
+    Plot the grid map and the path
     """
     plt.imshow(grid_map, cmap="hot_r", origin="lower")
     plt.colorbar()
@@ -45,16 +45,20 @@ def plot_map_path(grid_map, path):
     plt.show()
 
 
-def move_angle(prev_node, curr_node):
+def calculate_angle(prev_node, curr_node):
     x1, x2 = prev_node[0], curr_node[0]
     y1, y2 = prev_node[1], curr_node[1]
-    print('x1', x1, 'y1', y2, 'x2', x2, 'y2', y2)
+
     angle = - ((np.arctan2(y2 - y1, x2 - x1) * 180/np.pi) - 90)
+
     return angle
 
 
 PORT_NAME = '/dev/ttyUSB0' # for linux
-MINIMUM_SAMPLE_SIZE = 180 # 180 readings
+
+# decreasing this will increase the reaction speed of the robot
+MINIMUM_SAMPLE_SIZE = 50 # 180 samples
+
 MAX_PATH_LOOKAHEAD_FOR_ANGLE = 7 # look max 12 steps ahead to calculate angle
 
 
@@ -68,10 +72,12 @@ def lidar_read():
             angles = []
             distances = []
             for scan in lidar.iter_scans():
+                print(len(scan))
                 for (_, angle, distance) in scan:
                     if angle < 180:
                         continue
                     
+                    # we mounted lidar backwards, this transforms it in software
                     angle = 180 - (angle - 180)
                     
                     angles += [np.radians(angle)]
@@ -88,7 +94,6 @@ def lidar_read():
             lidar.disconnect()
             lidar = RPLidar(None, PORT_NAME, timeout=3)
 
-
 def main(angle_step, max_angle, move_step, xy_resolution):
     """
     Example usage
@@ -99,7 +104,9 @@ def main(angle_step, max_angle, move_step, xy_resolution):
     prev_angle = -10000
     while True:
         # ang, dist = file_read('lidar01.csv')
+        print("Reading lidar...")
         ang, dist = lidar_read()
+        print("...done")
         # print("angles:", ang)
         # print("distances:", dist)
         dist = dist * 10
@@ -116,11 +123,11 @@ def main(angle_step, max_angle, move_step, xy_resolution):
             print('path[0]', path[0])
             print(f'path[{MAX_PATH_LOOKAHEAD_FOR_ANGLE}]', path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
             
-            angle = move_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
+            angle = calculate_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
             print('angle = ', angle)
             
             if prev_angle != angle:
-                beep_send()
+                pass #beep_send()
             prev_angle = angle
             
             servo_send(angle)
