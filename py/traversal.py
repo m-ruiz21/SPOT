@@ -102,7 +102,6 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         ang, dist = lidar_read()
         # print("angles:", ang)
         # print("distances:", dist)
-        dist = dist * 10
         
         ### Getting times for Rust
         start = time.time()
