@@ -13,10 +13,13 @@ def acquire_serial():
 		raise Exception("Cannot acquire serial connection!")
 
 
-	# ser = serial.Serial(tty, 9600)
-	ser = open(tty, 'w')
+	ser = serial.Serial(tty, 9600)
+	# ser = open(tty, 'w')
 	print(f'Acquiring serial {tty}...')
 	sleep(3) # serial takes like 3 seconds to actually connect
+	ser.close()
+	ser = open(tty, 'w')
+  
 	return ser
 
 ser = acquire_serial()

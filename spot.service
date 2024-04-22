@@ -1,0 +1,9 @@
+[Unit]
+Description=Start SPOT script
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "/home/pi/SPOT/start_spot.sh"
+
+[Install]
+WantedBy=multi-user.target
