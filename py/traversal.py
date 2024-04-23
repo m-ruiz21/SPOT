@@ -79,8 +79,7 @@ def lidar_read():
         try:
             angles = []
             distances = []
-            for scan in lidar.iter_scans():
-                print(len(scan))
+            for scan in lidar.iter_scans(MINIMUM_SAMPLE_SIZE*2, MINIMUM_SAMPLE_SIZE):
                 for (_, angle, distance) in scan:
                     if angle < 180:
                         continue
@@ -90,7 +89,8 @@ def lidar_read():
                     
                     angles += [np.radians(angle)]
                     distances += [distance / 1000]
-            
+
+                print(len(angles))
                 if len(angles) >= MINIMUM_SAMPLE_SIZE:
                     lidar.stop()
                     return angles, np.array(distances)
@@ -115,6 +115,9 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         print("Reading lidar...")
         ang, dist = lidar_read()
         print("...done")
+        
+        dist *= 10 # ;)
+        
         # print("angles:", ang)
         # print("distances:", dist)
         
