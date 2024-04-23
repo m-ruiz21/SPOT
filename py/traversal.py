@@ -67,7 +67,7 @@ MINIMUM_SAMPLE_SIZE = 50 # 180 samples
 
 MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
 
-MIN_ALLOWABLE_DIST = .2
+MIN_ALLOWABLE_DIST = .15
 
 DANGER_RADIUS = 2
 
@@ -143,7 +143,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         else:
             beep_send()        
 
-        #plot_map_path(grid.grid_map, path)
+        plot_map_path(grid.grid_map, path)
         
         
 if __name__ == "__main__":
