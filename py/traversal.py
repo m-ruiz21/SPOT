@@ -65,15 +65,19 @@ PORT_NAME = '/dev/ttyUSB0' # for linux
 # decreasing this will increase the reaction speed of the robot
 MINIMUM_SAMPLE_SIZE = 50 # 180 samples
 
-MAX_PATH_LOOKAHEAD_FOR_ANGLE = 7 # look max 12 steps ahead to calculate angle
+MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
 
-MIN_ALLOWABLE_DIST = .1
+MIN_ALLOWABLE_DIST = .2
 
+DANGER_RADIUS = 2
 
 from adafruit_rplidar import RPLidar, RPLidarException
 lidar = RPLidar(None, PORT_NAME, timeout=3)
 
 def lidar_read():
+    """
+    Read LIDAR data 
+    """
     global lidar
     while True:
         try:
@@ -88,9 +92,9 @@ def lidar_read():
                     angle = 180 - (angle - 180)
                     
                     angles += [np.radians(angle)]
-                    distances += [distance / 1000]
+                    distances += [distance / 100]
 
-                print(len(angles))
+                # print(len(angles))
                 if len(angles) >= MINIMUM_SAMPLE_SIZE:
                     lidar.stop()
                     return angles, np.array(distances)
@@ -101,6 +105,7 @@ def lidar_read():
             lidar.stop()
             lidar.disconnect()
             lidar = RPLidar(None, PORT_NAME, timeout=3)
+
 
 def main(angle_step, max_angle, move_step, xy_resolution):
     """
@@ -114,14 +119,12 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         # ang, dist = file_read('lidar01.csv')
         print("Reading lidar...")
         ang, dist = lidar_read()
-        print("...done")
-        
-        dist *= 10 # ;)
+        print("...done") 
         
         # print("angles:", ang)
         # print("distances:", dist)
         
-        grid = scan_to_grid(ang, dist, xy_resolution, 2) 
+        grid = scan_to_grid(ang, dist, xy_resolution, DANGER_RADIUS) 
         path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, MIN_ALLOWABLE_DIST)
 
         if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE:
@@ -133,7 +136,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
             print('angle = ', angle)
             
             if prev_angle != angle:
-                pass #beep_send()
+                pass 
             prev_angle = angle
             
             servo_send(angle)
