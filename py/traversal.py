@@ -20,6 +20,7 @@ def get_moves(angle_step, max_angle, move_dist, resolution):
 
     return moves
 
+
 def file_read(f):
     """
     Reading LIDAR laser beams (angles and corresponding distance data)
@@ -65,6 +66,8 @@ PORT_NAME = '/dev/ttyUSB0' # for linux
 MINIMUM_SAMPLE_SIZE = 50 # 180 samples
 
 MAX_PATH_LOOKAHEAD_FOR_ANGLE = 7 # look max 12 steps ahead to calculate angle
+
+MIN_ALLOWABLE_DIST = .1
 
 
 from adafruit_rplidar import RPLidar, RPLidarException
@@ -116,7 +119,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         # print("distances:", dist)
         
         grid = scan_to_grid(ang, dist, xy_resolution, 2) 
-        path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, .1)
+        path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, MIN_ALLOWABLE_DIST)
 
         if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE:
             # Testing Code for angle and distance
