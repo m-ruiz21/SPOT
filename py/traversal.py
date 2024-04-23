@@ -63,13 +63,13 @@ def calculate_angle(prev_node, curr_node):
 PORT_NAME = '/dev/ttyUSB0' # for linux
 
 # decreasing this will increase the reaction speed of the robot
-MINIMUM_SAMPLE_SIZE = 50 # 180 samples
+MINIMUM_SAMPLE_SIZE =80 # 180 samples
 
 MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
 
 MIN_ALLOWABLE_DIST = .15
 
-DANGER_RADIUS = 2
+DANGER_RADIUS = .6
 
 from adafruit_rplidar import RPLidar, RPLidarException
 lidar = RPLidar(None, PORT_NAME, timeout=3)
@@ -92,7 +92,7 @@ def lidar_read():
                     angle = 180 - (angle - 180)
                     
                     angles += [np.radians(angle)]
-                    distances += [distance / 100]
+                    distances += [distance / 1000]
 
                 # print(len(angles))
                 if len(angles) >= MINIMUM_SAMPLE_SIZE:
@@ -141,9 +141,12 @@ def main(angle_step, max_angle, move_step, xy_resolution):
             
             servo_send(angle)
         else:
-            beep_send()        
+            # can't find a path, send a beep and straighten out the wheels
+            print("Cant' find path")
+            beep_send()
+            servo_send(0)
 
-        plot_map_path(grid.grid_map, path)
+        # plot_map_path(grid.grid_map, path)
         
         
 if __name__ == "__main__":
@@ -153,7 +156,7 @@ if __name__ == "__main__":
     parser.add_argument('--angle_step', type=int, default=10)
     
     # max angle either direction
-    parser.add_argument('--max_angle', type=int, default=60)
+    parser.add_argument('--max_angle', type=int, default=45)
     
     # number of meters robot moves in between valid moves
     parser.add_argument('--move_step', type=float, default=.25)

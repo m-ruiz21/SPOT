@@ -111,7 +111,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         grid = scan_to_grid(ang, dist, xy_resolution, 2) 
         path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, .1)
 
-        if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE:
+        if len(path) > +:
             # Testing Code for angle and distance
             print('path[0]', path[0])
             print(f'path[{MAX_PATH_LOOKAHEAD_FOR_ANGLE}]', path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
