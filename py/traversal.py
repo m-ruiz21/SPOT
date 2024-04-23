@@ -67,7 +67,7 @@ MINIMUM_SAMPLE_SIZE =80 # 180 samples
 
 MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
 
-MIN_ALLOWABLE_DIST = .15
+MIN_ALLOWABLE_DIST = .3
 
 DANGER_RADIUS = .6
 
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     parser.add_argument('--angle_step', type=int, default=10)
     
     # max angle either direction
-    parser.add_argument('--max_angle', type=int, default=45)
+    parser.add_argument('--max_angle', type=int, default=50)
     
     # number of meters robot moves in between valid moves
     parser.add_argument('--move_step', type=float, default=.25)
