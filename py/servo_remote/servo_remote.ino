@@ -96,7 +96,13 @@ bool parseIntegerFromSerial(int* output) {
         }
         break;
       case 'B':
-        tone(11, 500, 100);
+          if (isInteger(input)) { // Check if input is a valid integer
+            *output = input.toInt(); // Convert input string to integer and store in output
+            tone(11, 500, output);
+        } else {
+          Serial.println("Invalid input! Please enter an integer."); // Print error message for invalid input
+        }
+        
         break;
     }
   }
