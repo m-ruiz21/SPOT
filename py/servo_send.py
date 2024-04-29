@@ -39,13 +39,13 @@ def servo_send(pwm):
 	except Exception as e:
 		print(f"Error: {e}")
 
-def beep_send():
+def beep_send(duration=100):
 	try:
 		# Open the serial port
 		# if not ser.isOpen():
 		# 	ser.open()
 
-		bytes = ("B\n") #.encode()
+		bytes = ("B" + str(int(duration)) + "\n") #.encode()
 		ser.write(bytes)
 		print(f"Sent Beep")
 

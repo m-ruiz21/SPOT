@@ -7,16 +7,20 @@ import argparse
 from servo_send import servo_send, beep_send
 from adafruit_rplidar import RPLidar, RPLidarException
 
-PORT_NAME = '/dev/ttyUSB0' # for linux
+## LIDAR CONSTANTS
+PORT_NAME = '/dev/ttyUSB0'  # for linux
+MINIMUM_SAMPLE_SIZE=80  # decreasing this will increase the reaction speed of the robot but decrease the accuracy of the map
 
-# decreasing this will increase the reaction speed of the robot
-MINIMUM_SAMPLE_SIZE = 50 # 50 
-
+## TRAVERSAL CONSTANTS
 MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
+MIN_ALLOWABLE_DIST = .3
+DANGER_RADIUS = .6
+XY_RESOLUTION = .1
 
-MIN_ALLOWABLE_DIST = .2
-
-DANGER_RADIUS = 2
+## MOVE CONSTANTS
+ANGLE_STEP = 10 
+MAX_ANGLE = 50
+MOVE_STEP = .25
 
 lidar = RPLidar(None, PORT_NAME, timeout=3)
 
@@ -57,11 +61,16 @@ def calculate_angle(prev_node, curr_node):
 
     return angle
 
+
 def lidar_read():
     """
     Read LIDAR data 
+
+    Returns:
+        Tuple containing array of angles and distances 
     """
     global lidar
+
     while True:
         try:
             angles = []
@@ -75,7 +84,7 @@ def lidar_read():
                     angle = 180 - (angle - 180)
                     
                     angles += [np.radians(angle)]
-                    distances += [distance / 100]
+                    distances += [distance / 1000]
 
                 # print(len(angles))
                 if len(angles) >= MINIMUM_SAMPLE_SIZE:
@@ -91,59 +100,30 @@ def lidar_read():
 
 
 def main(angle_step, max_angle, move_step, xy_resolution):
-    """
-    Example usage
-    """
     print(__file__, "start")
     
     moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
     prev_angle = -10000
     while True:
-        # ang, dist = file_read('lidar01.csv')
-        print("Reading lidar...")
-        ang, dist = lidar_read()
-        print("...done") 
-        
-        # print("angles:", ang)
-        # print("distances:", dist)
+        ang, dist = lidar_read() 
         
         grid = scan_to_grid(ang, dist, xy_resolution, DANGER_RADIUS) 
         path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, MIN_ALLOWABLE_DIST)
 
-        if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE:
-            # Testing Code for angle and distance
-            print('path[0]', path[0])
-            print(f'path[{MAX_PATH_LOOKAHEAD_FOR_ANGLE}]', path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
-            
+        if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE: 
             angle = calculate_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
-            print('angle = ', angle)
             
             if prev_angle != angle:
                 pass 
+            
             prev_angle = angle
             
             servo_send(angle)
         else:
-            beep_send()        
-
-        #plot_map_path(grid.grid_map, path)
+            print("Cant' find path")
+            beep_send()
+            servo_send(0)
         
         
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process Parameters for SPOT.')
-    
-    # number of degrees in between valid moves
-    parser.add_argument('--angle_step', type=int, default=10)
-    
-    # max angle either direction
-    parser.add_argument('--max_angle', type=int, default=60)
-    
-    # number of meters robot moves in between valid moves
-    parser.add_argument('--move_step', type=float, default=.25)
-    
-    # % of dm^2 each grid represents
-    parser.add_argument('--xy_resolution', type=float, default=.1)
-
-    args = parser.parse_args()
-
-    main(args.angle_step, args.max_angle, args.move_step, args.xy_resolution)
+    main(ANGLE_STEP, MAX_ANGLE, MOVE_STEP, XY_RESOLUTION)
