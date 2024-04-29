@@ -5,6 +5,20 @@ from spot_rs import scan_to_grid
 from spot_rs import traverse_grid
 import argparse
 from servo_send import servo_send, beep_send
+from adafruit_rplidar import RPLidar, RPLidarException
+
+PORT_NAME = '/dev/ttyUSB0' # for linux
+
+# decreasing this will increase the reaction speed of the robot
+MINIMUM_SAMPLE_SIZE = 50 # 50 
+
+MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
+
+MIN_ALLOWABLE_DIST = .2
+
+DANGER_RADIUS = 2
+
+lidar = RPLidar(None, PORT_NAME, timeout=3)
 
 def get_moves(angle_step, max_angle, move_dist, resolution):
     """
@@ -19,22 +33,6 @@ def get_moves(angle_step, max_angle, move_dist, resolution):
         moves += [(x, y), (-x, y)]
 
     return moves
-
-
-def file_read(f):
-    """
-    Reading LIDAR laser beams (angles and corresponding distance data)
-    """
-    with open(f) as data:
-        measures = [line.split(",") for line in data]
-    angles = []
-    distances = []
-    for measure in measures:
-        angles.append(float(measure[0]))
-        distances.append(float(measure[1]))
-    angles = np.array(angles)
-    distances = np.array(distances)
-    return angles, distances
 
 
 def plot_map_path(grid_map, path):
@@ -58,21 +56,6 @@ def calculate_angle(prev_node, curr_node):
     angle = - ((np.arctan2(y2 - y1, x2 - x1) * 180/np.pi) - 90)
 
     return angle
-
-
-PORT_NAME = '/dev/ttyUSB0' # for linux
-
-# decreasing this will increase the reaction speed of the robot
-MINIMUM_SAMPLE_SIZE = 50 # 180 samples
-
-MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
-
-MIN_ALLOWABLE_DIST = .2
-
-DANGER_RADIUS = 2
-
-from adafruit_rplidar import RPLidar, RPLidarException
-lidar = RPLidar(None, PORT_NAME, timeout=3)
 
 def lidar_read():
     """
