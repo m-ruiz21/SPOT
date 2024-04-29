@@ -24,9 +24,18 @@ MOVE_STEP = .25
 
 lidar = RPLidar(None, PORT_NAME, timeout=3)
 
-def get_moves(angle_step, max_angle, move_dist, resolution):
+def get_moves(angle_step: int, max_angle: int, move_dist: float, resolution: float) -> list:
     """
     Gets all possible moves for SPOT 
+
+    Args:
+        angle_step: Angle step for moves
+        max_angle: Max angle for moves
+        move_dist: Move distance
+        resolution: Resolution of the grid map
+
+    Returns:
+        List of all possible moves
     """
     max_dist = round(move_dist / resolution)
 
@@ -80,13 +89,11 @@ def lidar_read():
                     if angle < 180:
                         continue
                     
-                    # we mounted lidar backwards, this transforms it in software
                     angle = 180 - (angle - 180)
                     
                     angles += [np.radians(angle)]
                     distances += [distance / 1000]
 
-                # print(len(angles))
                 if len(angles) >= MINIMUM_SAMPLE_SIZE:
                     lidar.stop()
                     return angles, np.array(distances)
@@ -99,16 +106,29 @@ def lidar_read():
             lidar = RPLidar(None, PORT_NAME, timeout=3)
 
 
+def timing_data_write(lidar_scan_time, path_find_time, move_time):
+    """
+    Write timing data to file
+    """
+    with open("timing_data.csv", "a") as f:
+        f.write(f"{lidar_scan_time}, {path_find_time}, {move_time}\n")
+
+
 def main(angle_step, max_angle, move_step, xy_resolution):
     print(__file__, "start")
     
     moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
     prev_angle = -10000
     while True:
+        start = time.time()
+
         ang, dist = lidar_read() 
+        lidar_scan_time = time.time() - start 
         
+        start_grid = time.time()
         grid = scan_to_grid(ang, dist, xy_resolution, DANGER_RADIUS) 
         path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, MIN_ALLOWABLE_DIST)
+        path_find_time = time.time() - start_grid 
 
         if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE: 
             angle = calculate_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
@@ -123,6 +143,13 @@ def main(angle_step, max_angle, move_step, xy_resolution):
             print("Cant' find path")
             beep_send()
             servo_send(0)
+
+        end = time.time()
+
+        move_time = end - start
+
+        timing_data_write(lidar_scan_time, path_find_time, move_time)
+
         
         
 if __name__ == "__main__":
