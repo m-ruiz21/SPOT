@@ -4,7 +4,7 @@ import time
 from spot_rs import scan_to_grid 
 from spot_rs import traverse_grid
 import argparse
-from utils.servo_send import servo_send, beep_send
+from servo_send import servo_send, beep_send
 
 def get_moves(angle_step, max_angle, move_dist, resolution):
     """
@@ -19,6 +19,7 @@ def get_moves(angle_step, max_angle, move_dist, resolution):
         moves += [(x, y), (-x, y)]
 
     return moves
+
 
 def file_read(f):
     """
@@ -38,7 +39,7 @@ def file_read(f):
 
 def plot_map_path(grid_map, path):
     """
-    Plotting the grid map and the path
+    Plot the grid map and the path
     """
     plt.imshow(grid_map, cmap="hot_r", origin="lower")
     plt.colorbar()
@@ -47,41 +48,53 @@ def plot_map_path(grid_map, path):
     plt.show()
 
 
-def move_angle(prev_node, curr_node):
+def calculate_angle(prev_node, curr_node):
     """
     Finds angle for move
     """
     x1, x2 = prev_node[0], curr_node[0]
     y1, y2 = prev_node[1], curr_node[1]
-    print('x1', x1, 'y1', y2, 'x2', x2, 'y2', y2)
+
     angle = - ((np.arctan2(y2 - y1, x2 - x1) * 180/np.pi) - 90)
+
     return angle
 
 
 PORT_NAME = '/dev/ttyUSB0' # for linux
-MINIMUM_SAMPLE_SIZE = 180 # 180 readings
-MAX_PATH_LOOKAHEAD_FOR_ANGLE = 7 # look max 12 steps ahead to calculate angle
 
+# decreasing this will increase the reaction speed of the robot
+MINIMUM_SAMPLE_SIZE = 50 # 180 samples
+
+MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
+
+MIN_ALLOWABLE_DIST = .2
+
+DANGER_RADIUS = 2
 
 from adafruit_rplidar import RPLidar, RPLidarException
 lidar = RPLidar(None, PORT_NAME, timeout=3)
 
 def lidar_read():
+    """
+    Read LIDAR data 
+    """
     global lidar
     while True:
         try:
             angles = []
             distances = []
-            for scan in lidar.iter_scans():
-                for (_, angle, distance) in scan:   # scan is (quality, angle, dist)
+            for scan in lidar.iter_scans(MINIMUM_SAMPLE_SIZE*2, MINIMUM_SAMPLE_SIZE):
+                for (_, angle, distance) in scan:
                     if angle < 180:
                         continue
                     
+                    # we mounted lidar backwards, this transforms it in software
                     angle = 180 - (angle - 180)
                     
                     angles += [np.radians(angle)]
-                    distances += [distance / 1000]
-            
+                    distances += [distance / 100]
+
+                # print(len(angles))
                 if len(angles) >= MINIMUM_SAMPLE_SIZE:
                     lidar.stop()
                     return angles, np.array(distances)
@@ -104,23 +117,26 @@ def main(angle_step, max_angle, move_step, xy_resolution):
     prev_angle = -10000
     while True:
         # ang, dist = file_read('lidar01.csv')
+        print("Reading lidar...")
         ang, dist = lidar_read()
+        print("...done") 
+        
         # print("angles:", ang)
         # print("distances:", dist)
         
-        grid = scan_to_grid(ang, dist, xy_resolution, 2) 
-        path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, .1)
+        grid = scan_to_grid(ang, dist, xy_resolution, DANGER_RADIUS) 
+        path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, MIN_ALLOWABLE_DIST)
 
         if len(path) > +:
             # Testing Code for angle and distance
             print('path[0]', path[0])
             print(f'path[{MAX_PATH_LOOKAHEAD_FOR_ANGLE}]', path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
             
-            angle = move_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
+            angle = calculate_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
             print('angle = ', angle)
             
             if prev_angle != angle:
-                beep_send()
+                pass 
             prev_angle = angle
             
             servo_send(angle)
