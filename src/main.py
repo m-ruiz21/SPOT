@@ -13,7 +13,7 @@ PORT_NAME = '/dev/ttyUSB0'  # for linux
 MINIMUM_SAMPLE_SIZE=80  # decreasing this will increase the reaction speed of the robot but decrease the accuracy of the map
 
 ## TRAVERSAL CONSTANTS
-MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
+MAX_PATH_LOOKAHEAD_FOR_ANGLE = 2 # look max 6 steps ( .5 meters ) ahead to calculate angle
 MIN_ALLOWABLE_DIST = .3
 DANGER_RADIUS = .6
 XY_RESOLUTION = .1
@@ -144,10 +144,12 @@ def main(angle_step, max_angle, move_step, xy_resolution):
     moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
     prev_angle = -10000
     
+    last_beep_time = time.time()
     while True:
         start = time.time()
 
         ang, dist = lidar_read() 
+        print("got data?")
         lidar_scan_time = time.time() - start 
         
         start_grid = time.time()
@@ -166,8 +168,12 @@ def main(angle_step, max_angle, move_step, xy_resolution):
             servo_send(angle)
         else:
             print("Cant' find path")
+            if time.time() -last_beep_time< 1:
+                continue
+            
             beep_send()
             servo_send(0)
+            last_beep_time = time.time()
 
         end = time.time()
 

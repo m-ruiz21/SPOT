@@ -27,6 +27,8 @@ def main():
     """
     if not os.path.exists('/tmp/lidar_pipe'):
         os.mkfifo('/tmp/lidar_pipe')
+        
+    
 
     lidar = RPLidar(None, PORT_NAME, baudrate=BAUDRATE, timeout=TIMEOUT)
 
@@ -45,13 +47,12 @@ def main():
                     distances += [distance / 1000]
 
                 if len(angles) >= MINIMUM_SAMPLE_SIZE:
-                    return angles, np.array(distances)
+                    send_data(angles, np.array(distances))
 
-        except RPLidarException as e:
+        except Exception as e:
             print(f'RPLidar Exception: {e}')
             print("Restarting Lidar...")
             lidar.stop()
-            lidar.stop_motor()
             lidar.disconnect()
             lidar = RPLidar(None, PORT_NAME, baudrate=BAUDRATE, timeout=TIMEOUT)
             
