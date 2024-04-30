@@ -71,7 +71,7 @@ def calculate_angle(prev_node, curr_node):
 
     return angle
 
-def lidar_read(f):
+def lidar_read():
     """
     Read lidar data from FIFO pipe
     """
@@ -137,9 +137,9 @@ def timing_data_write(lidar_scan_time, path_find_time, move_time):
 def main(angle_step, max_angle, move_step, xy_resolution):
     print(__file__, "start")
 
-    subprocess.Popen(["python3", "lidar_wrapper.py"])
-    print("starting lidar_wrapper.py...")
-    time.sleep(1)
+    # subprocess.Popen(["python3", "lidar_wrapper.py"])
+    # print("starting lidar_wrapper.py...")
+    # time.sleep(1)
 
     moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
     prev_angle = -10000

@@ -5,6 +5,8 @@ import os
 ## LIDAR CONSTANTS
 PORT_NAME = '/dev/ttyUSB0'  # for linux
 MINIMUM_SAMPLE_SIZE=80  # decreasing this will increase the reaction speed of the robot but decrease the accuracy of the map
+BAUDRATE = 115200
+TIMEOUT = 2
 
 def send_data(angles, distances):
     """
@@ -26,7 +28,7 @@ def main():
     if not os.path.exists('/tmp/lidar_pipe'):
         os.mkfifo('/tmp/lidar_pipe')
 
-    lidar = RPLidar(None, PORT_NAME, timeout=3, baudrate=115200)
+    lidar = RPLidar(None, PORT_NAME, baudrate=BAUDRATE, timeout=TIMEOUT)
 
     while True:
         try:
@@ -49,5 +51,10 @@ def main():
             print(f'RPLidar Exception: {e}')
             print("Restarting Lidar...")
             lidar.stop()
+            lidar.stop_motor()
             lidar.disconnect()
-            lidar = RPLidar(None, PORT_NAME, timeout=3)
+            lidar = RPLidar(None, PORT_NAME, baudrate=BAUDRATE, timeout=TIMEOUT)
+            
+
+if __name__ == "__main__":
+    main()
