@@ -29,11 +29,10 @@ def read_lidar(pipe):
                     pipe.send((angles, np.array(distances)))
                     return
 
-        except RPLidarException as e:
+        except Exception as e:
             print(f'RPLidar Exception: {e}')
             print("Restarting Lidar...")
             lidar.stop()
-            lidar.stop_motor()
             lidar.disconnect()
             lidar = RPLidar(None, PORT_NAME, baudrate=BAUDRATE, timeout=TIMEOUT)
         

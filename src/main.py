@@ -18,7 +18,7 @@ BAUDRATE = 115200
 TIMEOUT = 2
 
 ## TRAVERSAL CONSTANTS
-MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
+MAX_PATH_LOOKAHEAD_FOR_ANGLE = 2 # look max 6 steps ( .5 meters ) ahead to calculate angle
 MIN_ALLOWABLE_DIST = .3
 DANGER_RADIUS = .6
 XY_RESOLUTION = .1
@@ -100,6 +100,7 @@ def main(angle_step, max_angle, move_step, xy_resolution, pipe):
     moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
     prev_angle = -10000
     
+    last_beep_time = time.time()
     while True:
         start = time.time()
 
