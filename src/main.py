@@ -5,12 +5,17 @@ import time
 from spot_rs import scan_to_grid 
 from spot_rs import traverse_grid
 import argparse
-from servo_send import servo_send, beep_send
-from adafruit_rplidar import RPLidar, RPLidarException
+# from servo_send import servo_send, beep_send
+import multiprocessing
+from lidar_wrapper import read_lidar
+from adafruit_rplidar import RPLidar 
 
 ## LIDAR CONSTANTS
-PORT_NAME = '/dev/ttyUSB0'  # for linux
+# PORT_NAME = '/dev/ttyUSB0'  # for linux
+PORT_NAME = '/dev/cu.usbserial-0001' # for mac
 MINIMUM_SAMPLE_SIZE=80  # decreasing this will increase the reaction speed of the robot but decrease the accuracy of the map
+BAUDRATE = 115200
+TIMEOUT = 2
 
 ## TRAVERSAL CONSTANTS
 MAX_PATH_LOOKAHEAD_FOR_ANGLE = 6 # look max 6 steps ( 1.75 meters ) ahead to calculate angle
@@ -22,8 +27,6 @@ XY_RESOLUTION = .1
 ANGLE_STEP = 10 
 MAX_ANGLE = 50
 MOVE_STEP = .25
-
-lidar = RPLidar(None, PORT_NAME, timeout=3)
 
 def get_moves(angle_step: int, max_angle: int, move_dist: float, resolution: float) -> list:
     """
@@ -71,83 +74,36 @@ def calculate_angle(prev_node, curr_node):
 
     return angle
 
-def lidar_read():
-    """
-    Read lidar data from FIFO pipe
-    """
-    try:
-        angles = []
-        distances = []
-        while len(angles) < MINIMUM_SAMPLE_SIZE:
-            with open('/tmp/lidar_pipe', 'r') as f:
-                data = f.readlines()
-                for line in data:
-                    angle, distance = line.split()
-                    angles.append(float(angle))
-                    distances.append(float(distance))
-        
-        return angles, distances
-    
-    except Exception as e:
-        print(f"Error: {e}")
 
-# def lidar_read():
-#     """
-#     Read LIDAR data 
-
-#     Returns:
-#         Tuple containing array of angles and distances 
-#     """
-#     global lidar
-
-#     while True:
-#         try:
-#             angles = []
-#             distances = []
-#             for scan in lidar.iter_scans(MINIMUM_SAMPLE_SIZE*2, MINIMUM_SAMPLE_SIZE):
-#                 for (_, angle, distance) in scan:
-#                     if angle < 180:
-#                         continue
-                    
-#                     angle = 180 - (angle - 180)
-                    
-#                     angles += [np.radians(angle)]
-#                     distances += [distance / 1000]
-
-#                 if len(angles) >= MINIMUM_SAMPLE_SIZE:
-#                     lidar.stop()
-#                     return angles, np.array(distances)
-
-#         except RPLidarException as e:
-#             print(f'RPLidar Exception: {e}')
-#             print("Restarting Lidar...")
-#             lidar.stop()
-#             lidar.disconnect()
-#             lidar = RPLidar(None, PORT_NAME, timeout=3)
-
-
-def timing_data_write(lidar_scan_time, path_find_time, move_time):
+def timing_data_write(lidar_scan_time, path_find_time, turn_time, total_time):
     """
     Write timing data to file
     """
     with open("timing_data.csv", "a") as f:
-        f.write(f"{lidar_scan_time}, {path_find_time}, {move_time}\n")
+        f.write(f"{lidar_scan_time}, {path_find_time}, {turn_time}, {total_time}\n")
 
 
-def main(angle_step, max_angle, move_step, xy_resolution):
+def get_lidar_data(pipe):
+    angles = []
+    distances = []
+    while len(angles) < MINIMUM_SAMPLE_SIZE:
+        angle, distance = pipe.recv()
+        angles.append(angle)
+        distances.append(distance)
+
+    return angles, distances
+
+
+def main(angle_step, max_angle, move_step, xy_resolution, pipe):
     print(__file__, "start")
-
-    # subprocess.Popen(["python3", "lidar_wrapper.py"])
-    # print("starting lidar_wrapper.py...")
-    # time.sleep(1)
-
+    
     moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
     prev_angle = -10000
     
     while True:
         start = time.time()
 
-        ang, dist = lidar_read() 
+        ang, dist = get_lidar_data(pipe) 
         lidar_scan_time = time.time() - start 
         
         start_grid = time.time()
@@ -155,6 +111,7 @@ def main(angle_step, max_angle, move_step, xy_resolution):
         path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, MIN_ALLOWABLE_DIST)
         path_find_time = time.time() - start_grid 
 
+        start_turn = time.time()
         if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE: 
             angle = calculate_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
             
@@ -163,19 +120,32 @@ def main(angle_step, max_angle, move_step, xy_resolution):
             
             prev_angle = angle
             
-            servo_send(angle)
+            # servo_send(angle)
         else:
             print("Cant' find path")
-            beep_send()
-            servo_send(0)
+            # beep_send()
+            # servo_send(0)
 
         end = time.time()
 
-        move_time = end - start
+        turn_time = end - start_turn
+        total_time = end - start
 
-        timing_data_write(lidar_scan_time, path_find_time, move_time)
-
+        timing_data_write(lidar_scan_time, path_find_time, turn_time, total_time)
+        plot_map_path(grid.grid_map, path)
         
         
 if __name__ == "__main__":
-    main(ANGLE_STEP, MAX_ANGLE, MOVE_STEP, XY_RESOLUTION)
+    # In the main code
+    parent_pipe, child_pipe = multiprocessing.Pipe()
+    p = multiprocessing.Process(target=read_lidar, args=(child_pipe,))
+    p.start()
+
+    # Read from the pipe in the main code
+    try: 
+        main(ANGLE_STEP, MAX_ANGLE, MOVE_STEP, XY_RESOLUTION, parent_pipe)
+    except KeyboardInterrupt:
+        print("Exiting...")
+        p.terminate()
+        p.join()
+        print("All processes ended")
