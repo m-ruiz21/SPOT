@@ -1,9 +1,8 @@
 from adafruit_rplidar import RPLidar, RPLidarException
 import numpy as np
 
-# PORT_NAME = '/dev/ttyUSB0'  # for linux
-PORT_NAME = '/dev/cu.usbserial-0001' # for mac
-MINIMUM_SAMPLE_SIZE=80  # decreasing this will increase the reaction speed of the robot but decrease the accuracy of the map
+PORT_NAME = '/dev/ttyUSB0'  # for linux
+# PORT_NAME = '/dev/cu.usbserial-0001' # for mac
 BAUDRATE = 115200
 TIMEOUT = 2
 
@@ -13,23 +12,16 @@ def read_lidar(pipe):
         try:
             angles = []
             distances = []
-            for scan in lidar.iter_scans(MINIMUM_SAMPLE_SIZE*2, MINIMUM_SAMPLE_SIZE):
+            for scan in lidar.iter_scans():
                 print("got reading")
                 for (_, angle, distance) in scan:
                     if angle < 180:
                         continue
                     
                     angle = 180 - (angle - 180)
-                    
-                    angles += [np.radians(angle)]
-                    distances += [distance / 1000]
+                    pipe.send((np.radians(angle), distance / 1000))                    
 
-                if len(angles) >= MINIMUM_SAMPLE_SIZE:
-                    lidar.stop()
-                    pipe.send((angles, np.array(distances)))
-                    return
-
-        except Exception as e:
+        except RPLidarException as e:
             print(f'RPLidar Exception: {e}')
             print("Restarting Lidar...")
             lidar.stop()

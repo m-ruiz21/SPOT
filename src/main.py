@@ -5,23 +5,23 @@ import time
 from spot_rs import scan_to_grid 
 from spot_rs import traverse_grid
 import argparse
-# from servo_send import servo_send, beep_send
+from servo_send import servo_send, beep_send
 import multiprocessing
 from lidar_wrapper import read_lidar
 from adafruit_rplidar import RPLidar 
 
 ## LIDAR CONSTANTS
 # PORT_NAME = '/dev/ttyUSB0'  # for linux
-PORT_NAME = '/dev/cu.usbserial-0001' # for mac
 MINIMUM_SAMPLE_SIZE=80  # decreasing this will increase the reaction speed of the robot but decrease the accuracy of the map
-BAUDRATE = 115200
-TIMEOUT = 2
 
 ## TRAVERSAL CONSTANTS
 MAX_PATH_LOOKAHEAD_FOR_ANGLE = 2 # look max 6 steps ( .5 meters ) ahead to calculate angle
 MIN_ALLOWABLE_DIST = .3
 DANGER_RADIUS = .6
 XY_RESOLUTION = .1
+GET_BENCHMARK = False
+TURN_DELAY = 1      # delay in seconds between turns to control frequency spot can change directions 
+BEEP_DELAY = .5      # delay in seconds between beeps to control frequency spot can beep
 
 ## MOVE CONSTANTS
 ANGLE_STEP = 10 
@@ -50,17 +50,6 @@ def get_moves(angle_step: int, max_angle: int, move_dist: float, resolution: flo
         moves += [(x, y), (-x, y)]
 
     return moves
-
-
-def plot_map_path(grid_map, path):
-    """
-    Plot the grid map and the path
-    """
-    plt.imshow(grid_map, cmap="hot_r", origin="lower")
-    plt.colorbar()
-    for node in path:
-        plt.plot(node[0], node[1], 'ro')
-    plt.show()
 
 
 def calculate_angle(prev_node, curr_node):
@@ -94,13 +83,14 @@ def get_lidar_data(pipe):
     return angles, distances
 
 
-def main(angle_step, max_angle, move_step, xy_resolution, pipe):
+def main(pipe):
     print(__file__, "start")
     
-    moves = get_moves(angle_step, max_angle, move_step, xy_resolution)
+    moves = get_moves(ANGLE_STEP, MAX_ANGLE, MOVE_STEP, XY_RESOLUTION)
     prev_angle = -10000
     
     last_beep_time = time.time()
+    last_turn_time = time.time()
     while True:
         start = time.time()
 
@@ -108,7 +98,7 @@ def main(angle_step, max_angle, move_step, xy_resolution, pipe):
         lidar_scan_time = time.time() - start 
         
         start_grid = time.time()
-        grid = scan_to_grid(ang, dist, xy_resolution, DANGER_RADIUS) 
+        grid = scan_to_grid(ang, dist, XY_RESOLUTION, DANGER_RADIUS) 
         path = traverse_grid(grid.grid_map, grid.scanner_pos, grid.width - 1, moves, MIN_ALLOWABLE_DIST)
         path_find_time = time.time() - start_grid 
 
@@ -116,24 +106,33 @@ def main(angle_step, max_angle, move_step, xy_resolution, pipe):
         if len(path) > MAX_PATH_LOOKAHEAD_FOR_ANGLE: 
             angle = calculate_angle(path[0], path[MAX_PATH_LOOKAHEAD_FOR_ANGLE])
             
+            if time.time() - last_turn_time < TURN_DELAY:
+                continue
+
             if prev_angle != angle:
                 pass 
             
             prev_angle = angle
             
-            # servo_send(angle)
+            servo_send(angle)
+
+            if angle != 0:
+                last_turn_time = time.time()
         else:
             print("Cant' find path")
-            # beep_send()
-            # servo_send(0)
+            servo_send(0)
+            if time.time() - last_beep_time < BEEP_DELAY:
+                continue
+
+            beep_send()
+            last_beep_time = time.time()
 
         end = time.time()
 
         turn_time = end - start_turn
         total_time = end - start
-
-        timing_data_write(lidar_scan_time, path_find_time, turn_time, total_time)
-        plot_map_path(grid.grid_map, path)
+        if (GET_BENCHMARK): 
+            timing_data_write(lidar_scan_time, path_find_time, turn_time, total_time) 
         
         
 if __name__ == "__main__":
@@ -144,7 +143,7 @@ if __name__ == "__main__":
 
     # Read from the pipe in the main code
     try: 
-        main(ANGLE_STEP, MAX_ANGLE, MOVE_STEP, XY_RESOLUTION, parent_pipe)
+        main(parent_pipe)
     except KeyboardInterrupt:
         print("Exiting...")
         p.terminate()
